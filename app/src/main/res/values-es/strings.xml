@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">WifiPos</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Configuración</string>
+    <string name="hello_world">Hola Mundo!!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hola  blanck fragment</string>
+    <string name="btn_ini">Inicio</string>
+
+    <!-- WI-FI-->
+    <string name="wifi">WI-FI</string>
+    <string name="msgWifi">Esta aplicación requiere habilitar el Wi-fi</string>
+    <string name="enableWifi">Activar Wi-fi y Entrar</string>
+    <string name="disableWifi">Desactivar Wi-fi y cancelar</string>
+</resources>
