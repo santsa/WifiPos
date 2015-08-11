@@ -6,3 +6,5 @@
 \.metadata/
 Servers/
 target/
+\.idea/
+\.graddle/
