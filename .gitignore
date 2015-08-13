@@ -8,3 +8,4 @@ Servers/
 target/
 \.idea/
 \.graddle/
+*~
