@@ -12,6 +12,7 @@ public class AplicationWifi extends Application {
 
     private boolean wifi;
     private boolean first;
+    //private Activi
 
     public void onCreate(){
         wifi = true;

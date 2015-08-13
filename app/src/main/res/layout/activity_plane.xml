@@ -7,7 +7,7 @@
     tools:context="gorrita.com.wifipos.PlaneActivity">
 
     <fragment
-        android:id="@+id/plano_fragment"
+        android:id="@+id/plane_fragment"
         android:name="gorrita.com.wifipos.PlaneFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"

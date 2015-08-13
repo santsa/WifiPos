@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
                      this.open();
              }
          }catch(Exception e){
-             Log.e("MainActivity.onCreate", e.getMessage());
+             Log.e(this.getClass().getName(),"onCreate--->" + e.getMessage());
          }
     }
 
@@ -73,7 +73,6 @@ public class MainActivity extends Activity {
                                      @Override
                                      public void onClick(DialogInterface dialog,
                                                          int which) {
-                                         finish();
                                      }
                                  })
                         .setNegativeButton(R.string.disableWifi,
@@ -92,45 +91,49 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }*/
         }catch(Exception e){
-            Log.e("MainActivity.open", e.getMessage());
+            Log.e(this.getClass().getName(),"open-->" + e.getMessage());
         }
     }
 
-    private BroadcastReceiver WifiStateChangedReceiver
-            = new BroadcastReceiver(){
+    private BroadcastReceiver WifiStateChangedReceiver = new BroadcastReceiver(){
 
         @Override
         public void onReceive(Context context, Intent intent) {
-
-            int extraWifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE ,
-                    WifiManager.WIFI_STATE_UNKNOWN);
-            switch(extraWifiState){
-                case WifiManager.WIFI_STATE_DISABLED:
-                    try{
-                        Toast.makeText(MainActivity.this, "WIFI STATE DISABLED", Toast.LENGTH_SHORT).show();
-                        AplicationWifi aplicationWifi = (AplicationWifi)context.getApplicationContext();
-                        if (!aplicationWifi.isFirst()) {
-                            aplicationWifi.setFirst();
-                            Intent inte = new Intent(context.getApplicationContext(), PlaneActivity.class);
-                            inte.putExtra(String.valueOf(R.string.wifi), true);
-                            startActivity(intent);
+            try{
+                int extraWifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE ,
+                        WifiManager.WIFI_STATE_UNKNOWN);
+                switch(extraWifiState){
+                    case WifiManager.WIFI_STATE_DISABLED:
+                        try{
+                            //Toast.makeText(MainActivity.this, "WIFI STATE DISABLED", Toast.LENGTH_SHORT).show();
+                            AplicationWifi aplicationWifi = (AplicationWifi)context.getApplicationContext();
+                            if (!aplicationWifi.isFirst()) {
+                                aplicationWifi.setFirst(true);
+                                Intent i = new Intent(context,MainActivity.class);
+                                i.putExtra(String.valueOf(R.string.wifi), true);
+                                //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                context.startActivity(i);
+                            }
+                        }catch(Exception e){
+                            Log.e(this.getClass().getName(),"WIFI_STATE_DISABLED--->" + e.getMessage());
                         }
-                    }catch(Exception e){
-                        Log.e("WIFI_STATE_DISABLED", e.getMessage());
-                    }
-                    break;
-                case WifiManager.WIFI_STATE_DISABLING:
-                    Toast.makeText(MainActivity.this, "WIFI_STATE_DISABLING", Toast.LENGTH_SHORT).show();
-                    break;
-                case WifiManager.WIFI_STATE_ENABLED:
-                    Toast.makeText(MainActivity.this, "WIFI_STATE_ENABLED", Toast.LENGTH_SHORT).show();
-                    break;
-                case WifiManager.WIFI_STATE_ENABLING:
-                    Toast.makeText(MainActivity.this, "WIFI_STATE_ENABLING", Toast.LENGTH_SHORT).show();
-                    break;
-                case WifiManager.WIFI_STATE_UNKNOWN:
-                    Toast.makeText(MainActivity.this, "WIFI_STATE_UNKNOWN", Toast.LENGTH_SHORT).show();
-                    break;
+                        break;
+                    case WifiManager.WIFI_STATE_DISABLING:
+                        Toast.makeText(MainActivity.this, "WIFI_STATE_DISABLING", Toast.LENGTH_SHORT).show();
+                        break;
+                    case WifiManager.WIFI_STATE_ENABLED:
+                        Toast.makeText(MainActivity.this, "WIFI_STATE_ENABLED", Toast.LENGTH_SHORT).show();
+                        break;
+                    case WifiManager.WIFI_STATE_ENABLING:
+                        Toast.makeText(MainActivity.this, "WIFI_STATE_ENABLING", Toast.LENGTH_SHORT).show();
+                        break;
+                    case WifiManager.WIFI_STATE_UNKNOWN:
+                        Toast.makeText(MainActivity.this, "WIFI_STATE_UNKNOWN", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }catch(Exception e){
+                Log.e(this.getClass().getName(),"onReceive--->" + e.getMessage());
             }
         }};
 

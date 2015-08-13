@@ -2,16 +2,41 @@ package gorrita.com.wifipos;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 
 
-public class PlaneActivity extends Activity {
+public class PlaneActivity extends Activity implements OnFragmentInteractionListener{
+
+    WifiFragment wifiFragment;
+
+    @Override
+    public void openDialog(MotionEvent event) {
+        try {
+            wifiFragment = WifiFragment.newInstance("", "");
+            wifiFragment.show(getFragmentManager(), "dialog");
+        }catch(Exception e){
+            Log.e(this.getClass().getName(), "openDialog--->" + e.getMessage());
+        }
+    }
+
+    @Override
+    public void closeDialog() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_plane);
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_plane);
+            PlaneFragment plano = (PlaneFragment) getFragmentManager().findFragmentById(R.id.plane_fragment);
+            plano.setmListener(this);
+        }
+        catch(Exception e){
+            Log.e(this.getClass().getName(), "onCreate--->" + e.getMessage());
+        }
     }
 
     @Override
