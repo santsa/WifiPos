@@ -13,4 +13,12 @@
     <string name="msgWifi">Esta aplicació requereix habilitar el Wi-fi</string>
     <string name="enableWifi">Activar Wi-fi y Entrar</string>
     <string name="disableWifi">Desactivar Wi-fi y Cancelar</string>
+
+    <!--Dialog wifi-->
+    <string name="select_all">Seleccionar Tots</string>
+    <string name="Title_new_point">Nou Punt</string>
+    <string name="new_point">Introdüir Punt</string>
+    <string name="point_x">Coord. X</string>
+    <string name="point_y">Coord. Y</string>
+
 </resources>

@@ -15,7 +15,7 @@ public class PlaneActivity extends Activity implements OnFragmentInteractionList
     @Override
     public void openDialog(MotionEvent event) {
         try {
-            wifiFragment = WifiFragment.newInstance("", "");
+            wifiFragment = WifiFragment.newInstance(event, "");
             wifiFragment.show(getFragmentManager(), "dialog");
         }catch(Exception e){
             Log.e(this.getClass().getName(), "openDialog--->" + e.getMessage());

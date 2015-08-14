@@ -14,4 +14,12 @@
     <string name="msgWifi">The App needs enable Wi-Fi</string>
     <string name="enableWifi">Enable Wi-fi and Intro</string>
     <string name="disableWifi">Disable Wi-fi and Cancelar</string>
+
+    <!--Dialog wifi-->
+    <string name="select_all">Select All</string>
+    <string name="Title_new_point">New Point</string>
+    <string name="new_point">Enter Point</string>
+    <string name="point_x">Coord. X</string>
+    <string name="point_y">Coord. Y</string>
+
 </resources>

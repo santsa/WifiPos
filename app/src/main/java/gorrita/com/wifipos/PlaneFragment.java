@@ -2,8 +2,6 @@ package gorrita.com.wifipos;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,10 +59,12 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
                              Bundle savedInstanceState) {
         try {
             // Inflate the layout for this fragment
-            Drawable drawPlano = getResources().getDrawable(R.drawable.plane1);
+
+            //Drawable drawPlano = getResources().getDrawable(R.drawable.plane1);
             View view = inflater.inflate(R.layout.fragment_plane, container, false);
             imageView = (ImageView) view.findViewById(R.id.plane);
-            imageView.setImageDrawable(drawPlano);
+            //imageView.setImageDrawable(drawPlano);
+            imageView.setImageResource(R.drawable.plane1);
             imageView.setOnTouchListener(this);
             //imageView.setOnLongClickListener(this);
             return view;
@@ -75,12 +75,6 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
         }
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        /*if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }*/
-    }
 
     @Override
     public void onAttach(Activity act) {
@@ -88,7 +82,7 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
         try {
             //mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
-            Log.e(this.getClass().getName(), e.getMessage());
+            Log.e(this.getClass().getName(), "onAttach--->" + e.getMessage());
             throw new ClassCastException(act.toString()
                     + " must implement OnFragmentInteractionListener");
         }
