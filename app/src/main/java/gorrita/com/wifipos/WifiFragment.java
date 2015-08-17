@@ -3,7 +3,6 @@ package gorrita.com.wifipos;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -88,6 +87,8 @@ public class WifiFragment extends DialogFragment {
             View view = inflater.inflate(R.layout.fragment_wifi, container);
             //String title = getArguments().getString("title", "Enter Name");
             getDialog().setTitle(R.string.Title_new_point);
+            getDialog().setCancelable(true);
+            getDialog().setCanceledOnTouchOutside(true);
             // Show soft keyboard automatically
             getDialog().getWindow().setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -103,6 +104,7 @@ public class WifiFragment extends DialogFragment {
     }
 
     private void init(View view){
+
         try{
             editWifiX = (EditText)view.findViewById(R.id.edit_x);
             Float point = event.getX();
@@ -110,7 +112,9 @@ public class WifiFragment extends DialogFragment {
             editWifiY = (EditText)view.findViewById(R.id.edit_y);
             point = event.getY();
             editWifiY.setText(point.toString());
+
             listViewWifi = (ListView)view.findViewById(R.id.list_wifi);
+            listViewWifi.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             listViewWifi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
@@ -118,6 +122,7 @@ public class WifiFragment extends DialogFragment {
                     onListItemClick(view, position, id);
                 }
             });
+
         } catch (ClassCastException e) {
             Log.e(this.getClass().getName(), "init--->" + e.getMessage());
             throw e;
@@ -125,9 +130,11 @@ public class WifiFragment extends DialogFragment {
     }
 
     private void initButtonSave(View view){
+
         if (listWifiScan != null) {
             btnSaveWifi = (Button) view.findViewById(R.id.btn_Save_wifi);
             btnSaveWifi.setText(android.R.string.ok);
+            btnSaveWifi.setEnabled(false);
             btnSaveWifi.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View arg0) {
                     onSelectedChecksClick();
@@ -138,28 +145,59 @@ public class WifiFragment extends DialogFragment {
             btnSaveWifi.setVisibility(View.GONE);
     }
 
-
     private void onListItemClick(View v,int position,long id){
+
         try {
             CheckedTextView item = (CheckedTextView) v;
             item.setChecked(!item.isChecked());
-            if (position == 0)
+            if (position == 0) {
                 onAllChecksClick(v, !item.isChecked());
+                if (!item.isChecked()) {
+                    btnSaveWifiEnabledDisabbled();
+                }
+                else {
+                    btnSaveWifi.setEnabled(false);
+                }
+            }
+            else {
+                if (item.isChecked())
+                    btnSaveWifi.setEnabled(false);
+            }
+
         }catch (Exception ex){
             Log.e(this.getClass().getName(), "onListItemClick--->" + ex.getMessage());
         }
     }
 
-    //TODO: SELECTED ALL
+    //TODO: COMPROBAR QUE NO SELECCIONE ELS QUE TINGUEN EL ERROR O LA POTENCIA SIGA 0
     public void onAllChecksClick (View view, boolean selected) {
         try {
             int count = listViewWifi.getCount();
-            for (int i = 0; i < count; i++) {
+            for (int i = 1; i < count; i++) {
                 CheckedTextView item = (CheckedTextView) listViewWifi.getSelectedItem();
-                listViewWifi.setItemChecked(i, selected);
+                if (listWifiScan.get(i-1).level < 0)
+                    listViewWifi.setItemChecked(i, selected);
             }
         }catch (Exception ex){
             Log.e(this.getClass().getName(), "onAllChecksClick--->" + ex.getMessage());
+        }
+    }
+
+    //TODO: ELIMINAR TOTS ELS WIFIS QUE NO ESTIGUEN SELECCIONATS
+    private void btnSaveWifiEnabledDisabbled() {
+        try{
+            SparseBooleanArray resultArray = listViewWifi.getCheckedItemPositions();
+            int size = resultArray.size();
+            for (int i = 0; i < size; i++) {
+                if (resultArray.valueAt(i)) {
+                    btnSaveWifi.setEnabled(true);
+                    Log.e("CodecTestActivity", listViewWifi.getAdapter().getItem(resultArray.keyAt(i)).toString());
+                    return;
+                }
+            }
+            btnSaveWifi.setEnabled(false);
+        }catch (Exception ex){
+            Log.e(this.getClass().getName(), "onSelectedChecksClick--->" + ex.getMessage());
         }
     }
 
@@ -184,14 +222,14 @@ public class WifiFragment extends DialogFragment {
             listWifi = new ArrayList<String>();
             if (listWifiScan != null) {
                 StringBuffer strWifi = new StringBuffer();
-                strWifi.append(R.string.select_all);
+                strWifi.append(getText(R.string.select_all));
                 listWifi.add(strWifi.toString());
                 for (int i = listWifiScan.size() - 1; i >= 0; i--) {
                     strWifi = new StringBuffer();
                     final ScanResult scanResult = listWifiScan.get(i);
-                    /*if (scanResult == null) {
+                    if (scanResult == null) {
                         continue;
-                    }*/
+                    }
                     if (TextUtils.isEmpty(scanResult.SSID))
                         strWifi.append("....");
                     else
@@ -219,13 +257,6 @@ public class WifiFragment extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        /*if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }*/
     }
 
     @Override
