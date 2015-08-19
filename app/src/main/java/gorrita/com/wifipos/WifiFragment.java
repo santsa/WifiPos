@@ -41,6 +41,7 @@ public class WifiFragment extends DialogFragment {
     private ListView listViewWifi;
     private List<ScanResult> listWifiScan;
     private List<String> listWifi;
+    private List<ScanResult> listWifiScanSave;
     private Button btnSaveWifi;
 
     /**
@@ -114,6 +115,7 @@ public class WifiFragment extends DialogFragment {
             editWifiY.setText(point.toString());
 
             listViewWifi = (ListView)view.findViewById(R.id.list_wifi);
+            listViewWifi.setEmptyView(view.findViewById(R.id.empty_list_wifi));
             listViewWifi.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
             listViewWifi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -149,20 +151,15 @@ public class WifiFragment extends DialogFragment {
 
         try {
             CheckedTextView item = (CheckedTextView) v;
-            item.setChecked(!item.isChecked());
             if (position == 0) {
-                onAllChecksClick(v, !item.isChecked());
-                if (!item.isChecked()) {
-                    btnSaveWifiEnabledDisabbled();
-                }
-                else {
-                    btnSaveWifi.setEnabled(false);
-                }
+                onAllChecksClick(v, item.isChecked());
             }
-            else {
-                if (item.isChecked())
-                    btnSaveWifi.setEnabled(false);
+            else{
+                //item.toggle();
+                boolean check = item.isChecked();
+                item.setChecked(item.isChecked());
             }
+            btnSaveWifiEnabledDisabbled();
 
         }catch (Exception ex){
             Log.e(this.getClass().getName(), "onListItemClick--->" + ex.getMessage());
@@ -173,10 +170,9 @@ public class WifiFragment extends DialogFragment {
     public void onAllChecksClick (View view, boolean selected) {
         try {
             int count = listViewWifi.getCount();
-            for (int i = 1; i < count; i++) {
-                CheckedTextView item = (CheckedTextView) listViewWifi.getSelectedItem();
-                if (listWifiScan.get(i-1).level < 0)
-                    listViewWifi.setItemChecked(i, selected);
+            for (int i = 0; i < count; i++) {
+                //CheckedTextView item = (CheckedTextView) listViewWifi.getSelectedItem();
+                listViewWifi.setItemChecked(i, selected);
             }
         }catch (Exception ex){
             Log.e(this.getClass().getName(), "onAllChecksClick--->" + ex.getMessage());
@@ -191,7 +187,7 @@ public class WifiFragment extends DialogFragment {
             for (int i = 0; i < size; i++) {
                 if (resultArray.valueAt(i)) {
                     btnSaveWifi.setEnabled(true);
-                    Log.e("CodecTestActivity", listViewWifi.getAdapter().getItem(resultArray.keyAt(i)).toString());
+                    Log.i("CodecTestActivity", listViewWifi.getAdapter().getItem(resultArray.keyAt(i)).toString());
                     return;
                 }
             }
@@ -205,10 +201,13 @@ public class WifiFragment extends DialogFragment {
     public void onSelectedChecksClick () {
         try{
             SparseBooleanArray resultArray = listViewWifi.getCheckedItemPositions();
+            listWifiScanSave = new ArrayList<ScanResult>();
             int size = resultArray.size();
-            for (int i = 0; i < size; i++)
-                if (resultArray.valueAt(i))
-                    Log.e("CodecTestActivity", listViewWifi.getAdapter().getItem(resultArray.keyAt(i)).toString());
+            for (int i = 1; i < size; i++)
+                if (resultArray.valueAt(i)) {
+                    listWifiScanSave.add(listWifiScan.get(resultArray.keyAt(i)));
+                    Log.i("CodecTestActivity", listViewWifi.getAdapter().getItem(resultArray.keyAt(i)).toString());
+                }
         }catch (Exception ex){
             Log.e(this.getClass().getName(), "onSelectedChecksClick--->" + ex.getMessage());
         }
@@ -218,28 +217,38 @@ public class WifiFragment extends DialogFragment {
         WifiManager wifi = (WifiManager) this.getActivity()
                 .getSystemService(Context.WIFI_SERVICE);
         try {
-            listWifiScan = wifi.getScanResults();
+            List<ScanResult> listWifiScanAll = wifi.getScanResults();
             listWifi = new ArrayList<String>();
-            if (listWifiScan != null) {
-                StringBuffer strWifi = new StringBuffer();
-                strWifi.append(getText(R.string.select_all));
-                listWifi.add(strWifi.toString());
-                for (int i = listWifiScan.size() - 1; i >= 0; i--) {
-                    strWifi = new StringBuffer();
-                    final ScanResult scanResult = listWifiScan.get(i);
-                    if (scanResult == null) {
+            if (listWifiScanAll != null) {
+                StringBuffer strWifi;
+                listWifiScan = new ArrayList<ScanResult>();
+                for (ScanResult scanResult:listWifiScanAll) {
+                    if (scanResult == null || scanResult.level >= 0)
                         continue;
-                    }
+                    strWifi = new StringBuffer();
                     if (TextUtils.isEmpty(scanResult.SSID))
                         strWifi.append("....");
                     else
                         strWifi.append(scanResult.SSID);
-                    strWifi.append(scanResult.BSSID + " " + scanResult.level + " dBm");
+                    strWifi.append("--");
+                    strWifi.append( scanResult.BSSID);
+                    strWifi.append("--");
+                    strWifi.append(scanResult.level);
+                    strWifi.append(" dBm");
                     listWifi.add(strWifi.toString());
+                    listWifiScan.add(scanResult);
+                }
+                if (listWifiScan.size() > 0){
+                    strWifi = new StringBuffer();
+                    strWifi.append(getText(R.string.select_all));
+                    listWifi.add(0,strWifi.toString());
+                    listWifiScan.add(0,null);
                 }
             }
         }catch (Exception ex){
-                Log.e(this.getClass().getName(), "listWifiScan--->" + ex.getMessage());
+            listWifi.clear();
+            listWifiScan.clear();
+            Log.e(this.getClass().getName(), "listWifiScan--->" + ex.getMessage());
         }
     }
 
@@ -250,6 +259,7 @@ public class WifiFragment extends DialogFragment {
                             android.R.layout.simple_list_item_checked, listWifi);
             listViewWifi.setAdapter(adaptador);
         }catch (Exception ex){
+            listWifi.clear();
             Log.e(this.getClass().getName(), "loadWifiScan--->" + ex.getMessage());
         }
     }

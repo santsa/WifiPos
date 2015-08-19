@@ -32,7 +32,7 @@ public class PlaneActivity extends Activity implements OnFragmentInteractionList
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_plane);
             PlaneFragment plano = (PlaneFragment) getFragmentManager().findFragmentById(R.id.plane_fragment);
-            plano.setmListener(this);
+            //plano.setmListener(this);
         }
         catch(Exception e){
             Log.e(this.getClass().getName(), "onCreate--->" + e.getMessage());

@@ -86,13 +86,15 @@ public class MainActivity extends Activity {
                                     }
                                 });
                 builder.show();
-            /*} else {
-                Intent intent = new Intent(MainActivity.this, PlaneActivity.class);
-                startActivity(intent);
-            }*/
         }catch(Exception e){
             Log.e(this.getClass().getName(),"open-->" + e.getMessage());
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(WifiStateChangedReceiver);
     }
 
     private BroadcastReceiver WifiStateChangedReceiver = new BroadcastReceiver(){
@@ -116,20 +118,20 @@ public class MainActivity extends Activity {
                                 context.startActivity(i);
                             }
                         }catch(Exception e){
-                            Log.e(this.getClass().getName(),"WIFI_STATE_DISABLED--->" + e.getMessage());
+                            Log.e(this.getClass().getName(),getString(R.string.wifi_state_disabled) + "--->" + e.getMessage());
                         }
                         break;
                     case WifiManager.WIFI_STATE_DISABLING:
-                        Toast.makeText(MainActivity.this, "WIFI_STATE_DISABLING", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.wifi_state_disabling), Toast.LENGTH_SHORT).show();
                         break;
                     case WifiManager.WIFI_STATE_ENABLED:
-                        Toast.makeText(MainActivity.this, "WIFI_STATE_ENABLED", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.wifi_state_enabled), Toast.LENGTH_SHORT).show();
                         break;
                     case WifiManager.WIFI_STATE_ENABLING:
-                        Toast.makeText(MainActivity.this, "WIFI_STATE_ENABLING", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.wifi_state_enabling), Toast.LENGTH_SHORT).show();
                         break;
                     case WifiManager.WIFI_STATE_UNKNOWN:
-                        Toast.makeText(MainActivity.this, "WIFI_STATE_UNKNOWN", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.wifi_state_unknown), Toast.LENGTH_SHORT).show();
                         break;
                 }
             }catch(Exception e){

@@ -13,6 +13,11 @@
     <string name="msgWifi">Esta aplicación requiere habilitar el Wi-fi</string>
     <string name="enableWifi">Activar Wi-fi y Entrar</string>
     <string name="disableWifi">Desactivar Wi-fi y cancelar</string>
+    <string name="wifi_state_disabled">WI-FI ESTADO DESABILITADO</string>
+    <string name="wifi_state_disabling">WI-FI ESTADO DESABILITANDO</string>
+    <string name="wifi_state_enabled">WI-FI ESTADO HABILITADO</string>
+    <string name="wifi_state_enabling">WI-FI ESTADO HABILITANDO</string>
+    <string name="wifi_state_unknown">WI-FI ESTADO DESCONOCIDO</string>
 
     <!--Dialog wifi-->
     <string name="select_all">Seleccionar Todos</string>
@@ -20,5 +25,6 @@
     <string name="new_point">Introducir Punto</string>
     <string name="point_x">Coord. X</string>
     <string name="point_y">Coord. Y</string>
+    <string name="empty_wifi">No hay Wi-Fi</string>
 
 </resources>

@@ -13,7 +13,12 @@
     <string name="wifi">WI-FI</string>
     <string name="msgWifi">The App needs enable Wi-Fi</string>
     <string name="enableWifi">Enable Wi-fi and Intro</string>
-    <string name="disableWifi">Disable Wi-fi and Cancelar</string>
+    <string name="disableWifi">Disable Wi-fi and Cancel</string>
+    <string name="wifi_state_disabled">WI-FI STATE DISABLED</string>
+    <string name="wifi_state_disabling">WI-FI STATE DISABLING</string>
+    <string name="wifi_state_enabled">WI-FI STATE ENABLED</string>
+    <string name="wifi_state_enabling">WI-FI STATE ENABLING</string>
+    <string name="wifi_state_unknown">WI-FI STATE UNKNOWN</string>
 
     <!--Dialog wifi-->
     <string name="select_all">Select All</string>
@@ -21,5 +26,6 @@
     <string name="new_point">Enter Point</string>
     <string name="point_x">Coord. X</string>
     <string name="point_y">Coord. Y</string>
+    <string name="empty_wifi">There is not any Wi-Fi</string>
 
 </resources>
