@@ -12,6 +12,7 @@ public class AplicationWifi extends Application {
 
     private boolean wifi;
     private boolean first;
+    //private WifiBD wifiBD;
     //private Activi
 
     public void onCreate(){
@@ -35,4 +36,13 @@ public class AplicationWifi extends Application {
     public void setFirst(boolean first) {
         this.first = first;
     }
+/*
+    public WifiBD getWifiBD() {
+        return wifiBD;
+    }
+
+    public void setWifiBD(WifiBD wifiBD) {
+        this.wifiBD = wifiBD;
+    }
+*/
 }

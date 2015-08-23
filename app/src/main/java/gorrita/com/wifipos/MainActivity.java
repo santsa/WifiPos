@@ -16,22 +16,28 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import gorrita.com.wifipos.db.Plane;
+import gorrita.com.wifipos.db.WifiPos;
+
 
 public class MainActivity extends Activity {
+
+    private AplicationWifi aplicationWifi;
 
      @Override
     protected void onCreate(Bundle savedInstanceState) {
          try{
              super.onCreate(savedInstanceState);
              setContentView(R.layout.activity_main);
+             WifiPos.intDB(this);
+             Plane p = WifiPos.listPlanes();
              Button btnIni = (Button)findViewById(R.id.btnIni);
-
              this.registerReceiver(this.WifiStateChangedReceiver,
                      new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
              btnIni.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View arg0) {
-                    MainActivity.this.open();
-                }
+                 public void onClick(View arg0) {
+                     MainActivity.this.open();
+                 }
              });
              Bundle extra = this.getIntent().getExtras();
              if (extra != null) {
@@ -43,7 +49,15 @@ public class MainActivity extends Activity {
              Log.e(this.getClass().getName(),"onCreate--->" + e.getMessage());
          }
     }
-
+/*
+    private void initBD(){
+        try{
+            WifiBD wifiBD = new WifiBD(this);//WifiBD.newInstance(this);
+        }catch(Exception e){
+            Log.e(this.getClass().getName(),"initBD--->" + e.getMessage());
+        }
+    }
+*/
     private void open(){
         try {
             //AplicationWifi aplicationWifi = (AplicationWifi)this.getApplication();
@@ -62,10 +76,15 @@ public class MainActivity extends Activity {
                                     public void onClick(DialogInterface arg0, int arg1) {
                                         //Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                                         //startActivity(intent);
-                                        if (wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
-                                            wifiManager.setWifiEnabled(true);
-                                        Intent intent = new Intent(MainActivity.this, PlaneActivity.class);
-                                        startActivity(intent);
+                                        try {
+                                            if (wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
+                                                wifiManager.setWifiEnabled(true);
+                                            Intent intent = new Intent(MainActivity.this, PlaneActivity.class);
+                                            startActivity(intent);
+                                        }
+                                        catch (Exception ex){
+                                            Log.e(this.getClass().getName(),"AlertDialog.Builder.onClick-->" + ex.getMessage());
+                                        }
                                     }
                                 })
                          .setNeutralButton(android.R.string.cancel,
@@ -108,7 +127,7 @@ public class MainActivity extends Activity {
                     case WifiManager.WIFI_STATE_DISABLED:
                         try{
                             //Toast.makeText(MainActivity.this, "WIFI STATE DISABLED", Toast.LENGTH_SHORT).show();
-                            AplicationWifi aplicationWifi = (AplicationWifi)context.getApplicationContext();
+                            aplicationWifi = (AplicationWifi)context.getApplicationContext();
                             if (!aplicationWifi.isFirst()) {
                                 aplicationWifi.setFirst(true);
                                 Intent i = new Intent(context,MainActivity.class);

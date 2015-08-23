@@ -17,6 +17,7 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
     private static final String ARG_PARAM2 = "param2";
 
     private OnFragmentInteractionListener mListener;
+    private AplicationWifi aplicationWifi;
     private String mParam1;
     private String mParam2;
 
@@ -31,16 +32,12 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
         return fragment;
     }
 
-    public PlaneFragment() {
-        // Required empty public constructor
-    }
-
-
+    public PlaneFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AplicationWifi aplicationWifi = (AplicationWifi)getActivity().getApplication();
+        aplicationWifi = (AplicationWifi)getActivity().getApplication();
         aplicationWifi.setFirst(false);
 
         if (getArguments() != null) {
@@ -50,6 +47,8 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
 
     }
 
+    private static final CharSequence res = "android.resource://";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,6 +56,9 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
             // Inflate the layout for this fragment
             View view = inflater.inflate(R.layout.fragment_plane, container, false);
             imageView = (ImageView) view.findViewById(R.id.plane);
+            /*Uri imgUri=Uri.parse(res + "gorrita.com.wifipos/plane1.gif");
+            imageView.setImageURI(null);
+            imageView.setImageURI(imgUri);*/
             imageView.setImageResource(R.drawable.plane1);
             imageView.setOnTouchListener(this);
             //imageView.setOnLongClickListener(this);
@@ -67,6 +69,7 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
             throw ex;
         }
     }
+
 
 
     @Override
