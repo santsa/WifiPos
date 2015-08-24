@@ -15,7 +15,9 @@ public class AplicationWifi extends Application {
     //private WifiBD wifiBD;
     //private Activi
 
+    @Override
     public void onCreate(){
+        super.onCreate();
         wifi = true;
         first = true;
         Log.i(this.getClass().getName(), "onCreate");
