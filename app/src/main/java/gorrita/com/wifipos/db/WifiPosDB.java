@@ -9,7 +9,7 @@ public class WifiPosDB extends SQLiteOpenHelper {
     //private static WifiBD ourInstance;
 
     public WifiPosDB(Context context){
-        super(context, "WifiPos", null, 1);
+        super(context, "WifiPosManager", null, 1);
         //super(contexto, nombre, factory, version);
     }
 
@@ -20,7 +20,7 @@ public class WifiPosDB extends SQLiteOpenHelper {
         db.execSQL(Training.createTable);
         db.execSQL(PointTraining.createTable);
         db.execSQL(PointTrainingWifi.createTable);
-        db.execSQL("INSERT INTO PLANES VALUES ( null, 'gorrita.com.wifipos/plane1.gif', 'pla prova', " +
+        db.execSQL("INSERT INTO PLANES VALUES ( null, '0x7f02007f', 'pla prova', " +
                 "'primer pla de prova'," + System.currentTimeMillis() + " ," + System.currentTimeMillis() + " , 1)");
     }
 

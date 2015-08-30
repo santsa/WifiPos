@@ -16,8 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import gorrita.com.wifipos.db.Plane;
-import gorrita.com.wifipos.db.WifiPos;
+import gorrita.com.wifipos.db.WifiPosManager;
 
 
 public class MainActivity extends Activity {
@@ -29,8 +28,8 @@ public class MainActivity extends Activity {
          try{
              super.onCreate(savedInstanceState);
              setContentView(R.layout.activity_main);
-             WifiPos.intDB(this);
-             Plane p = WifiPos.listPlanes();
+             WifiPosManager.intDB(this);
+             //Plane p = WifiPosManager.listPlanes();
              Button btnIni = (Button)findViewById(R.id.btnIni);
              this.registerReceiver(this.WifiStateChangedReceiver,
                      new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
@@ -106,14 +105,28 @@ public class MainActivity extends Activity {
                                 });
                 builder.show();
         }catch(Exception e){
-            Log.e(this.getClass().getName(),"open-->" + e.getMessage());
+            Log.e(this.getClass().getName(),"open--->" + e.getMessage());
         }
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
-        unregisterReceiver(WifiStateChangedReceiver);
+        try {
+            super.onPause();
+            //unregisterReceiver(WifiStateChangedReceiver);
+        }catch(Exception e){
+            Log.e(this.getClass().getName(),"onPause--->" + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        try {
+            super.onDestroy();
+            unregisterReceiver(WifiStateChangedReceiver);
+        }catch(Exception e){
+            Log.e(this.getClass().getName(),"onDestroy--->" + e.getMessage());
+        }
     }
 
     private BroadcastReceiver WifiStateChangedReceiver = new BroadcastReceiver(){

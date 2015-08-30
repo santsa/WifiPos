@@ -2,17 +2,19 @@
     <string name="app_name">WifiPos</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Configuración</string>
-    <string name="hello_world">Hola Mundo!!</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hola  blanck fragment</string>
+    <!-- PlaneFragment -->
     <string name="btn_ini">Inicio</string>
+    <string name="title_activity_plane">PlaneActivity</string>
+    <string name="plane_not_exist">Plano no Existe</string>
 
     <!-- WI-FI-->
     <string name="wifi">WI-FI</string>
     <string name="msgWifi">Esta aplicación requiere habilitar el Wi-fi</string>
     <string name="enableWifi">Activar Wi-fi y Entrar</string>
     <string name="disableWifi">Desactivar Wi-fi y cancelar</string>
+
+    <!-- BROADCAST RECEIVER -->
     <string name="wifi_state_disabled">WI-FI ESTADO DESABILITADO</string>
     <string name="wifi_state_disabling">WI-FI ESTADO DESABILITANDO</string>
     <string name="wifi_state_enabled">WI-FI ESTADO HABILITADO</string>

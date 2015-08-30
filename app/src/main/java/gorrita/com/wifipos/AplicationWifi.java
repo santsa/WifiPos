@@ -3,6 +3,8 @@ package gorrita.com.wifipos;
 import android.app.Application;
 import android.util.Log;
 
+import gorrita.com.wifipos.db.Plane;
+
 /**
  * Created by salva on 06/08/15.
  */
@@ -12,15 +14,21 @@ public class AplicationWifi extends Application {
 
     private boolean wifi;
     private boolean first;
+    private Plane plane;
     //private WifiBD wifiBD;
     //private Activi
 
     @Override
     public void onCreate(){
-        super.onCreate();
-        wifi = true;
-        first = true;
-        Log.i(this.getClass().getName(), "onCreate");
+        try {
+            super.onCreate();
+            wifi = true;
+            first = true;
+            plane = null;
+            Log.i(this.getClass().getName(), "onCreate");
+        }catch (Exception e){
+            Log.e(this.getClass().getName(), "onCreate--->" + e.getMessage());
+        }
     }
 
     public boolean isWifi() {
@@ -38,13 +46,13 @@ public class AplicationWifi extends Application {
     public void setFirst(boolean first) {
         this.first = first;
     }
-/*
-    public WifiBD getWifiBD() {
-        return wifiBD;
+
+    public Plane getPlane() {
+        return plane;
     }
 
-    public void setWifiBD(WifiBD wifiBD) {
-        this.wifiBD = wifiBD;
+    public void setPlane(Plane plane) {
+        this.plane = plane;
     }
-*/
+
 }
