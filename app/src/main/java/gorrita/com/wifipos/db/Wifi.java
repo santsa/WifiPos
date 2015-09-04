@@ -16,6 +16,7 @@ public class Wifi extends Comun{
             " timestamp LONG," +
             " seen LONG," +
             " isAutoJoinCandidate INTEGER," +
+            " DESCRIPTION TEXT," +
             " DATACREATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
             " DATAUPDATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
             " ACTIVE INTEGER NOT NULL DEFAULT 1 " +
