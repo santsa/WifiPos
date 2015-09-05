@@ -18,6 +18,14 @@ public class PointTraining extends Comun{
                     " FOREIGN KEY (TRAINING) REFERENCES TRAININGS (ID)" +
                     " )";
 
+    public PointTraining() {}
+
+    public PointTraining(Integer training, Double x, Double y) {
+        Training = training;
+        this.x = x;
+        this.y = y;
+    }
+
     private Integer Training;
     private Double x;
     private Double y;

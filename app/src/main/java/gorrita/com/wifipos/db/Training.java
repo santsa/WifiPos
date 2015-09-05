@@ -16,6 +16,12 @@ public class Training extends Comun{
                     " FOREIGN KEY (PLANE) REFERENCES PLANES (ID)" +
                     " )";
 
+    public Training() {}
+
+    public Training(Integer plane) {
+        this.plane = plane;
+    }
+
     private Integer plane;
 
     public Integer getPlane() {

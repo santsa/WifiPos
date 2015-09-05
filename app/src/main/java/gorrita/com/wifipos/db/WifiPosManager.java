@@ -10,6 +10,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import gorrita.com.wifipos.AplicationWifi;
+
 /**
  * Created by salva on 23/08/15.
  */
@@ -41,7 +43,7 @@ public class WifiPosManager {
             if (c.moveToFirst()) {
                 //Recorremos el cursor hasta que no haya más registros
                 do {
-                    plane = loadPlane();
+                    plane = loadCursorPlane();
                     listPlane.add(plane);
                 } while(c.moveToNext());
             }
@@ -68,7 +70,7 @@ public class WifiPosManager {
             if (c.moveToFirst()) {
                 //Recorremos el cursor hasta que no haya más registros
                 do {
-                    pointTraining = loadPointTraining();
+                    pointTraining = loadCursorPointTraining();
                     listPointTraining.add(pointTraining);
                 } while(c.moveToNext());
             }
@@ -95,7 +97,7 @@ public class WifiPosManager {
             if (c.moveToFirst()) {
                 //Recorremos el cursor hasta que no haya más registros
                 do {
-                    pointTrainingWifi = loadPointTrainingWifi();
+                    pointTrainingWifi = loadCursorPointTrainingWifi();
                     listPointTrainingWifi.add(pointTrainingWifi);
                 } while(c.moveToNext());
             }
@@ -122,7 +124,7 @@ public class WifiPosManager {
             if (c.moveToFirst()) {
                 //Recorremos el cursor hasta que no haya más registros
                 do {
-                    training = loadTraining();
+                    training = loadCursorTraining();
                     listTraining.add(training);
                 } while(c.moveToNext());
             }
@@ -149,7 +151,7 @@ public class WifiPosManager {
             if (c.moveToFirst()) {
                 //Recorremos el cursor hasta que no haya más registros
                 do {
-                    wifi = loadWifi();
+                    wifi = loadCursorWifi();
                     listWifi.add(wifi);
                 } while(c.moveToNext());
             }
@@ -165,39 +167,39 @@ public class WifiPosManager {
         }
     }
 
-    private static Plane loadPlane(){
+    private static Plane loadCursorPlane(){
         Plane plane = new Plane();
         plane.setFile(c.getString(1));
         plane.setName(c.getString(2));
-        loadComun(c, plane);
+        loadCursorComun(c, plane);
         return plane;
     }
 
-    private static PointTraining loadPointTraining(){
+    private static PointTraining loadCursorPointTraining(){
         PointTraining pointTraining = new PointTraining();
         pointTraining.setTraining(c.getInt(1));
         pointTraining.setX(c.getDouble(2));
         pointTraining.setY(c.getDouble(3));
-        loadComun(c, pointTraining);
+        loadCursorComun(c, pointTraining);
         return pointTraining;
     }
 
-    private static PointTrainingWifi loadPointTrainingWifi(){
+    private static PointTrainingWifi loadCursorPointTrainingWifi(){
         PointTrainingWifi pointTrainingWifi = new PointTrainingWifi();
         pointTrainingWifi.setPointtraining(c.getInt(1));
         pointTrainingWifi.setWifi(c.getInt(2));
-        loadComun(c, pointTrainingWifi);
+        loadCursorComun(c, pointTrainingWifi);
         return pointTrainingWifi;
     }
 
-    private static Training loadTraining(){
+    private static Training loadCursorTraining(){
         Training training = new Training();
         training.setPlane(c.getInt(1));
-        loadComun(c, training);
+        loadCursorComun(c, training);
         return training;
     }
 
-    private static Wifi loadWifi(){
+    private static Wifi loadCursorWifi(){
         Wifi wifi = new Wifi();
         wifi.setSSID(c.getString(1));
         wifi.setBSSID(c.getString(2));
@@ -207,11 +209,11 @@ public class WifiPosManager {
         wifi.setTimestamp(c.getLong(6));
         wifi.setSeen(c.getLong(7));
         wifi.setIsAutoJoinCandidate(c.getInt(8));
-        loadComun(c, wifi);
+        loadCursorComun(c, wifi);
         return wifi;
     }
 
-    private static void loadComun(Cursor c, Comun cm){
+    private static void loadCursorComun(Cursor c, Comun cm){
         cm.setId(c.getInt(0));
         cm.setDescription(c.getString(c.getColumnIndex(DESCRIPTION.toString())));
         cm.setDataCreated(c.getLong(c.getColumnIndex(DATACREATED.toString())));
@@ -243,60 +245,39 @@ public class WifiPosManager {
         }
     }
 
-    private static void insert(Comun c){
+    private static int insert(Comun c, boolean close){
 
-        SQLiteDatabase db = null;
         values = null;
+        int id = 0;
         try{
-            db = wifiPosDB.getWritableDatabase();
+            if(db == null)
+                db = wifiPosDB.getWritableDatabase();
             values = new ContentValues();
             if (c instanceof Plane)
-                insertPlane((Plane) c);
-            else if (c instanceof Plane)
-                insertPointTraining((PointTraining) c);
-            else if (c instanceof Plane)
-                insertPointTrainingWifi((PointTrainingWifi) c);
-            else if (c instanceof Plane)
-                insertTraining((Training) c);
-            else if (c instanceof Plane)
-                insertWifi((Wifi) c);
+                id = insertPlane((Plane) c);
+            else if (c instanceof PointTraining)
+                id = insertPointTraining((PointTraining) c);
+            else if (c instanceof PointTrainingWifi)
+                id = insertPointTrainingWifi((PointTrainingWifi) c);
+            else if (c instanceof Training)
+                id = insertTraining((Training) c);
+            else if (c instanceof Wifi)
+                id = insertWifi((Wifi) c);
+            return id;
         }
         catch (Exception ex){
             Log.e(TAG.toString(), "insert--->" + ex.getMessage());
             throw ex;
         }
         finally{
-            close(db, null);
+            if (close)
+                close(db, null);
         }
     }
-/*
-    private static CharSequence prefixInsert = "INSERT INTO * VALUES ( null,";
 
-    private static StringBuilder initInsert (CharSequence table){
-        StringBuilder sql = new StringBuilder();
-        sql.append(prefixInsert.toString().replace("*", table));
-        return sql;
-    }
-
-    " DESCRIPTION TEXT," +
-            " DATACREATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
-            " DATAUPDATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
-            " ACTIVE INTEGER NOT NULL DEFAULT 1 " +
-            " )"
-
-    private static void endInsert(StringBuilder sql, Comun c){
-        CharSequence chr = c.getDescription() == null ? " , null": " , '" +c.getDescription()+"'";
-        sql.append(chr);
-        if (c.getDataCreated()!=null)
-            sql.append(" , " + c.getDataCreated());
-        if ()
-        chr = c.getDataCreated() == null ? " ,null": " , " +c.getDescription();
-        chr = c.getDescription() == null ? " ,null": " , " +c.getDescription();
-        chr = c.getDescription() == null ? " ,null": " , " +c.getDescription();
-    }
-*/
     private static void valuesComun(Comun c){
-        values.put("DESCRIPTION", c.getDescription().toString());
+        String desc = c.getDescription()==null?null:c.getDescription().toString();
+        values.put("DESCRIPTION", desc);
         values.put("DATACREATED", c.getDataCreated());
         values.put("DATAUPDATED", c.getDataUpdateted());
         values.put("ACTIVE", c.getActive());
@@ -391,8 +372,8 @@ public class WifiPosManager {
 
     private static int insertWifi(Wifi w){
         saveLoadWifi(w);
-        int idTraining = (int) db.insert("WIFIS", null, values);
-        return idTraining;
+        int idWifi= (int) db.insert("WIFIS", null, values);
+        return idWifi;
     }
 
     private static int updateWifi(Wifi w, String whereClause, String[] whereArgs){
@@ -402,14 +383,39 @@ public class WifiPosManager {
         return filasAfectadas;
     }
 
-    public static void savePoint(List<ScanResult> wifis){
+    private static void loadComun(Comun cm, Integer id, CharSequence description, Long datacreated, Integer active){
+        cm.setId(id);
+        cm.setDescription(description);
+        cm.setDataCreated(datacreated);
+        cm.setDataUpdateted(null);
+        cm.setActive(active);
+    }
 
-
-        //entrenament
-        //comprobar si existeix entrenament amb eixe pla
-        //si no existeix crearlo
-        //carregar el entrenament
-        //posarlo a una variable estática
+    public static void savePoint(List<ScanResult> wifis, AplicationWifi aplicationWifi, Double x, Double y){
+        try {
+            //entrenament
+            //comprobar si existeix entrenament amb eixe pla
+            //si no existeix crearlo
+            //carregar el entrenament
+            //posarlo a una variable estática
+            db = wifiPosDB.getWritableDatabase();
+            db.beginTransaction();
+            if (aplicationWifi.getTraining()==null) {
+                Training training = new Training(aplicationWifi.getPlane().getId());
+                loadComun(training, null, null, System.currentTimeMillis(), 1);
+                int idTraining = insert(training, false);
+                training.setId(idTraining);
+                aplicationWifi.setTraining(training);
+            }
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+            Log.e(TAG.toString(), "savePoint--->" + e.getMessage());
+            throw e;
+        }
+        finally{
+            db.endTransaction();
+            close(db, null);
+        }
 
         //punt d'entrenament
         //si anteriorment no hi ha entrenament afegirne un

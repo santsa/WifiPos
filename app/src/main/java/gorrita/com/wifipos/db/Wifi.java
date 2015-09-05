@@ -31,6 +31,19 @@ public class Wifi extends Comun{
     private Long seen;
     private Integer isAutoJoinCandidate;
 
+    public Wifi(){}
+
+    public Wifi(String SSID, String BSSID, String capabilities, Integer level, Integer frequency, Long timestamp, Long seen, Integer isAutoJoinCandidate) {
+        this.SSID = SSID;
+        this.BSSID = BSSID;
+        this.capabilities = capabilities;
+        this.level = level;
+        this.frequency = frequency;
+        this.timestamp = timestamp;
+        this.seen = seen;
+        this.isAutoJoinCandidate = isAutoJoinCandidate;
+    }
+
     public String getSSID() {
         return SSID;
     }

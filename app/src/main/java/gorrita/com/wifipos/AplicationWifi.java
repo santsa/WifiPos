@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import gorrita.com.wifipos.db.Plane;
+import gorrita.com.wifipos.db.Training;
 
 /**
  * Created by salva on 06/08/15.
@@ -15,6 +16,7 @@ public class AplicationWifi extends Application {
     private boolean wifi;
     private boolean first;
     private Plane plane;
+    private Training training;
     //private WifiBD wifiBD;
     //private Activi
 
@@ -25,6 +27,7 @@ public class AplicationWifi extends Application {
             wifi = true;
             first = true;
             plane = null;
+            training = null;
             Log.i(this.getClass().getName(), "onCreate");
         }catch (Exception e){
             Log.e(this.getClass().getName(), "onCreate--->" + e.getMessage());
@@ -55,4 +58,11 @@ public class AplicationWifi extends Application {
         this.plane = plane;
     }
 
+    public Training getTraining() {
+        return training;
+    }
+
+    public void setTraining(Training training) {
+        this.training = training;
+    }
 }

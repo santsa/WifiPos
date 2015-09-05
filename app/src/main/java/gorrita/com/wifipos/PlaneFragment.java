@@ -15,6 +15,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import gorrita.com.wifipos.db.Plane;
+import gorrita.com.wifipos.db.Training;
 import gorrita.com.wifipos.db.WifiPosManager;
 
 
@@ -56,8 +57,12 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
             aplicationWifi.setFirst(false);
             if(aplicationWifi.getPlane() == null) {
                 List<Plane> lstPlane= WifiPosManager.listPlanes(" where FILE ='" + file + "'");
-                if(lstPlane != null)
+                if(lstPlane != null) {
                     aplicationWifi.setPlane(lstPlane.get(0));
+                    List<Training> lstTraining = WifiPosManager.listTraining(" WHERE PLANE = " + aplicationWifi.getPlane().getId());
+                    if(!lstTraining.isEmpty())
+                        aplicationWifi.setTraining(lstTraining.get(0));
+                }
             }
             if (getArguments() != null) {
                 mParam1 = getArguments().getString(ARG_PARAM1);

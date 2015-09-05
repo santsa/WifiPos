@@ -18,6 +18,13 @@ public class PointTrainingWifi extends Comun{
             " FOREIGN KEY (WIFI) REFERENCES WIFIS (ID)" +
             " )";
 
+    public PointTrainingWifi() {}
+
+    public PointTrainingWifi(Integer pointtraining, Integer wifi) {
+        this.pointtraining = pointtraining;
+        this.wifi = wifi;
+    }
+
     private Integer pointtraining;
     private Integer wifi;
 

@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 public class PlaneActivity extends Activity implements OnFragmentInteractionListener{
 
     WifiFragment wifiFragment;
+    private CharSequence file = "0x7f02007f";
 
     @Override
     public void openDialog(MotionEvent event) {
@@ -31,7 +32,7 @@ public class PlaneActivity extends Activity implements OnFragmentInteractionList
         try {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_plane);
-            PlaneFragment plano = (PlaneFragment) getFragmentManager().findFragmentById(R.id.plane_fragment);
+            PlaneFragment planeFragment = (PlaneFragment) getFragmentManager().findFragmentById(R.id.plane_fragment);
             //plano.setmListener(this);
         }
         catch(Exception e){

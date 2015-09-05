@@ -14,6 +14,13 @@ public class Plane extends Comun{
                     " ACTIVE INTEGER NOT NULL DEFAULT 1 " +
                     " )";
 
+    public Plane() {}
+
+    public Plane(CharSequence file, CharSequence name) {
+        this.file = file;
+        this.name = name;
+    }
+
     private CharSequence file;
     private CharSequence name;
 

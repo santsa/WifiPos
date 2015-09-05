@@ -28,5 +28,6 @@
     <string name="point_x">Coord. X</string>
     <string name="point_y">Coord. Y</string>
     <string name="empty_wifi">There is not any Wi-Fi</string>
+    <string name="ok_save_point">The point is save</string>
 
 </resources>
