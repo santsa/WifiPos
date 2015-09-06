@@ -5,43 +5,18 @@ package gorrita.com.wifipos.db;
  */
 public class Wifi extends Comun{
 
-    public static final String createTable =
-            " CREATE TABLE WIFIS (" +
-            " ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-            " SSID TEXT," +
-            " BSSID TEXT NOT NULL," +
-            " capabilities TEXT," +
-            " level INTEGER NOT NULL," +
-            " frequency INTEGER, " +
-            " timestamp LONG," +
-            " seen LONG," +
-            " isAutoJoinCandidate INTEGER," +
-            " DESCRIPTION TEXT," +
-            " DATACREATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
-            " DATAUPDATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
-            " ACTIVE INTEGER NOT NULL DEFAULT 1 " +
-            " )";
-
     private String SSID;
     private String BSSID;
     private String capabilities;
-    private Integer level;
     private Integer frequency;
-    private Long timestamp;
-    private Long seen;
-    private Integer isAutoJoinCandidate;
 
     public Wifi(){}
 
-    public Wifi(String SSID, String BSSID, String capabilities, Integer level, Integer frequency, Long timestamp, Long seen, Integer isAutoJoinCandidate) {
+    public Wifi(String SSID, String BSSID, String capabilities, Integer frequency) {
         this.SSID = SSID;
         this.BSSID = BSSID;
         this.capabilities = capabilities;
-        this.level = level;
         this.frequency = frequency;
-        this.timestamp = timestamp;
-        this.seen = seen;
-        this.isAutoJoinCandidate = isAutoJoinCandidate;
     }
 
     public String getSSID() {
@@ -68,14 +43,6 @@ public class Wifi extends Comun{
         this.capabilities = capabilities;
     }
 
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
     public Integer getFrequency() {
         return frequency;
     }
@@ -84,27 +51,16 @@ public class Wifi extends Comun{
         this.frequency = frequency;
     }
 
-    public Long getTimestamp() {
-        return timestamp;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Wifi wifi = (Wifi) o;
+        return BSSID.equals(wifi.BSSID);
     }
 
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public Long getSeen() {
-        return seen;
-    }
-
-    public void setSeen(Long seen) {
-        this.seen = seen;
-    }
-
-    public Integer getIsAutoJoinCandidate() {
-        return isAutoJoinCandidate;
-    }
-
-    public void setIsAutoJoinCandidate(Integer isAutoJoinCandidate) {
-        this.isAutoJoinCandidate = isAutoJoinCandidate;
+    @Override
+    public int hashCode() {
+        return BSSID.hashCode();
     }
 }

@@ -5,28 +5,19 @@ package gorrita.com.wifipos.db;
  */
 public class PointTrainingWifi extends Comun{
 
-    public static final String createTable =
-            " CREATE TABLE POINTTRAININGWIFIS (" +
-            " ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-            " POINTTRAINING INTEGER," +
-            " WIFI INTEGER," +
-            " DESCRIPTION TEXT," +
-            " DATACREATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
-            " DATAUPDATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
-            " ACTIVE INTEGER NOT NULL DEFAULT 1, " +
-            " FOREIGN KEY (POINTTRAINING) REFERENCES POINTTRAININGS (POINTTRAINING)," +
-            " FOREIGN KEY (WIFI) REFERENCES WIFIS (ID)" +
-            " )";
-
     public PointTrainingWifi() {}
 
-    public PointTrainingWifi(Integer pointtraining, Integer wifi) {
+    public PointTrainingWifi(Integer pointtraining, Integer wifi, Integer level, Long timestamp) {
         this.pointtraining = pointtraining;
         this.wifi = wifi;
+        this.level = level;
+        this.timestamp = timestamp;
     }
 
     private Integer pointtraining;
     private Integer wifi;
+    private Integer level;
+    private Long timestamp;
 
     public Integer getPointtraining() {
         return pointtraining;
@@ -44,5 +35,20 @@ public class PointTrainingWifi extends Comun{
         this.wifi = wifi;
     }
 
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
 
 }

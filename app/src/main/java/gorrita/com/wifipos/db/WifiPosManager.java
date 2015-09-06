@@ -23,7 +23,7 @@ public class WifiPosManager {
     private static final CharSequence DATACREATED = "DATACREATED";
     private static final CharSequence DATAUPDATED = "DATAUPDATED";
     private static final CharSequence ACTIVE = "ACTIVE";
-    private static SQLiteDatabase db;
+    private static SQLiteDatabase dbr, dbw;
     private static Cursor c;
     private static  ContentValues values;
 
@@ -32,139 +32,159 @@ public class WifiPosManager {
             wifiPosDB = new WifiPosDB(contexto);
     }
 
-    public static List<Plane>  listPlanes(CharSequence where){
-        db = null;
+    public static List<Plane> listPlanes(CharSequence where){
+        dbr = null;
         c = null;
         try{
-            db = wifiPosDB.getReadableDatabase();
-            c = db.rawQuery("select * from planes " + where, null);
-            List<Plane> listPlane = new ArrayList();
-            Plane plane = null;
-            if (c.moveToFirst()) {
-                //Recorremos el cursor hasta que no haya más registros
-                do {
-                    plane = loadCursorPlane();
-                    listPlane.add(plane);
-                } while(c.moveToNext());
-            }
-
-            return listPlane;
+            return _listPlanes(where);
         }
         catch (Exception ex){
             Log.e(TAG.toString(), "listPlanes--->" + ex.getMessage());
             throw ex;
         }
         finally{
-            close(db, c);
+            close(dbr, c);
         }
     }
 
-    public static List<PointTraining>  listPointTraining(CharSequence where){
-        db = null;
+    private static List<Plane> _listPlanes(CharSequence where){
+
+        dbr = wifiPosDB.getReadableDatabase();
+        c = dbr.rawQuery("select * from planes " + where, null);
+        List<Plane> listPlane = new ArrayList();
+        Plane plane = null;
+        if (c.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                plane = loadCursorPlane();
+                listPlane.add(plane);
+            } while(c.moveToNext());
+        }
+
+        return listPlane;
+    }
+
+    public static List<PointTraining> listPointTraining(CharSequence where){
+        dbr = null;
         c = null;
         try{
-            db = wifiPosDB.getReadableDatabase();
-            c = db.rawQuery("select * from POINTTRAININGS " + where, null);
-            List<PointTraining> listPointTraining = new ArrayList();
-            PointTraining pointTraining = null;
-            if (c.moveToFirst()) {
-                //Recorremos el cursor hasta que no haya más registros
-                do {
-                    pointTraining = loadCursorPointTraining();
-                    listPointTraining.add(pointTraining);
-                } while(c.moveToNext());
-            }
-
-            return listPointTraining;
+            return _listPointTraining(where);
         }
         catch (Exception ex){
             Log.e(TAG.toString(), "listPointTraining--->" + ex.getMessage());
             throw ex;
         }
         finally{
-            close(db, c);
+            close(dbr, c);
         }
     }
 
-    public static List<PointTrainingWifi>  listPointTrainingWifi(CharSequence where){
-        db = null;
+    private static List<PointTraining>  _listPointTraining(CharSequence where){
+        dbr = wifiPosDB.getReadableDatabase();
+        c = dbr.rawQuery("select * from POINTTRAININGS " + where, null);
+        List<PointTraining> listPointTraining = new ArrayList();
+        PointTraining pointTraining = null;
+        if (c.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                pointTraining = loadCursorPointTraining();
+                listPointTraining.add(pointTraining);
+            } while(c.moveToNext());
+        }
+        return listPointTraining;
+    }
+
+    public static List<PointTrainingWifi> listPointTrainingWifi(CharSequence where){
+        dbr = null;
         c = null;
         try{
-            db = wifiPosDB.getReadableDatabase();
-            c = db.rawQuery("select * from POINTTRAININGWIFIS " + where, null);
-            List<PointTrainingWifi> listPointTrainingWifi = new ArrayList();
-            PointTrainingWifi pointTrainingWifi = null;
-            if (c.moveToFirst()) {
-                //Recorremos el cursor hasta que no haya más registros
-                do {
-                    pointTrainingWifi = loadCursorPointTrainingWifi();
-                    listPointTrainingWifi.add(pointTrainingWifi);
-                } while(c.moveToNext());
-            }
-
-            return listPointTrainingWifi;
+            return _listPointTrainingWifi(where);
         }
         catch (Exception ex){
             Log.e(TAG.toString(), "listPointTrainingWifi--->" + ex.getMessage());
             throw ex;
         }
         finally{
-            close(db, c);
+            close(dbr, c);
         }
     }
 
-    public static List<Training>  listTraining(CharSequence where){
-        db = null;
+    private static List<PointTrainingWifi> _listPointTrainingWifi(CharSequence where){
+        dbr = wifiPosDB.getReadableDatabase();
+        c = dbr.rawQuery("select * from POINTTRAININGWIFIS " + where, null);
+        List<PointTrainingWifi> listPointTrainingWifi = new ArrayList();
+        PointTrainingWifi pointTrainingWifi = null;
+        if (c.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                pointTrainingWifi = loadCursorPointTrainingWifi();
+                listPointTrainingWifi.add(pointTrainingWifi);
+            } while(c.moveToNext());
+        }
+        return listPointTrainingWifi;
+    }
+
+    public static List<Training> listTraining(CharSequence where){
+        dbr = null;
         c = null;
         try{
-            db = wifiPosDB.getReadableDatabase();
-            c = db.rawQuery("select * from TRAININGS " + where, null);
-            List<Training> listTraining = new ArrayList();
-            Training training = null;
-            if (c.moveToFirst()) {
-                //Recorremos el cursor hasta que no haya más registros
-                do {
-                    training = loadCursorTraining();
-                    listTraining.add(training);
-                } while(c.moveToNext());
-            }
 
-            return listTraining;
+            return _listTraining(where);
         }
         catch (Exception ex){
             Log.e(TAG.toString(), "listTraining--->" + ex.getMessage());
             throw ex;
         }
         finally{
-            close(db, c);
+            close(dbr, c);
         }
     }
 
+    private static List<Training> _listTraining(CharSequence where){
+        dbr = wifiPosDB.getReadableDatabase();
+        c = dbr.rawQuery("select * from TRAININGS " + where, null);
+        List<Training> listTraining = new ArrayList();
+        Training training = null;
+        if (c.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                training = loadCursorTraining();
+                listTraining.add(training);
+            } while(c.moveToNext());
+        }
+        return listTraining;
+    }
+
     public static List<Wifi>  listWifi(CharSequence where){
-        db = null;
+        dbr = null;
         c = null;
         try{
-            db = wifiPosDB.getReadableDatabase();
-            c = db.rawQuery("select * from WIFIS " + where, null);
-            List<Wifi> listWifi = new ArrayList();
-            Wifi wifi = null;
-            if (c.moveToFirst()) {
-                //Recorremos el cursor hasta que no haya más registros
-                do {
-                    wifi = loadCursorWifi();
-                    listWifi.add(wifi);
-                } while(c.moveToNext());
-            }
 
-            return listWifi;
+            return _listWifi(where);
         }
         catch (Exception ex){
             Log.e(TAG.toString(), "listWifi--->" + ex.getMessage());
             throw ex;
         }
         finally{
-            close(db, c);
+            close(dbr, c);
         }
+    }
+
+    private static List<Wifi> _listWifi(CharSequence where){
+        dbr = wifiPosDB.getReadableDatabase();
+        c = dbr.rawQuery("select * from WIFIS " + where, null);
+        List<Wifi> listWifi = new ArrayList();
+        Wifi wifi = null;
+        if (c.moveToFirst()) {
+            //Recorremos el cursor hasta que no haya más registros
+            do {
+                wifi = loadCursorWifi();
+                listWifi.add(wifi);
+            } while(c.moveToNext());
+        }
+
+        return listWifi;
     }
 
     private static Plane loadCursorPlane(){
@@ -188,6 +208,8 @@ public class WifiPosManager {
         PointTrainingWifi pointTrainingWifi = new PointTrainingWifi();
         pointTrainingWifi.setPointtraining(c.getInt(1));
         pointTrainingWifi.setWifi(c.getInt(2));
+        pointTrainingWifi.setLevel(c.getInt(3));
+        pointTrainingWifi.setTimestamp(c.getLong(4));
         loadCursorComun(c, pointTrainingWifi);
         return pointTrainingWifi;
     }
@@ -204,11 +226,7 @@ public class WifiPosManager {
         wifi.setSSID(c.getString(1));
         wifi.setBSSID(c.getString(2));
         wifi.setCapabilities(c.getString(3));
-        wifi.setLevel(c.getInt(4));
         wifi.setFrequency(c.getInt(5));
-        wifi.setTimestamp(c.getLong(6));
-        wifi.setSeen(c.getLong(7));
-        wifi.setIsAutoJoinCandidate(c.getInt(8));
         loadCursorComun(c, wifi);
         return wifi;
     }
@@ -222,9 +240,8 @@ public class WifiPosManager {
     }
 
     private static void update(Comun c){
-        SQLiteDatabase db = null;
         try{
-            db = wifiPosDB.getWritableDatabase();
+            dbr = wifiPosDB.getWritableDatabase();
             if (c instanceof Plane)
                 updatePlane((Plane) c, null, null);
             else if (c instanceof Plane)
@@ -241,7 +258,7 @@ public class WifiPosManager {
             throw ex;
         }
         finally{
-            close(db, null);
+            close(dbr, null);
         }
     }
 
@@ -250,8 +267,8 @@ public class WifiPosManager {
         values = null;
         int id = 0;
         try{
-            if(db == null)
-                db = wifiPosDB.getWritableDatabase();
+            if(dbr == null)
+                dbr = wifiPosDB.getWritableDatabase();
             values = new ContentValues();
             if (c instanceof Plane)
                 id = insertPlane((Plane) c);
@@ -271,7 +288,7 @@ public class WifiPosManager {
         }
         finally{
             if (close)
-                close(db, null);
+                close(dbr, null);
         }
     }
 
@@ -291,14 +308,14 @@ public class WifiPosManager {
 
     private static int insertPlane(Plane p){
         saveLoadPlane(p);
-        int idPlane = (int) db.insert("PLANES", null, values);
+        int idPlane = (int) dbr.insert("PLANES", null, values);
         return idPlane;
     }
 
     private static int updatePlane(Plane p, String whereClause, String[] whereArgs){
         saveLoadPlane(p);
         //int filasAfectadas = (int) db.update("PLANES", values, "id = ?", new String[]{String.valueOf(p.getId())});
-        int filasAfectadas = (int) db.update("PLANES", values, whereClause, whereArgs);
+        int filasAfectadas = (int) dbr.update("PLANES", values, whereClause, whereArgs);
         return filasAfectadas;
     }
 
@@ -311,33 +328,51 @@ public class WifiPosManager {
 
     private static int insertPointTraining(PointTraining p){
         saveLoadPointTraining(p);
-        int idPointTraining = (int) db.insert("POINTTRAININGS", null, values);
+        int idPointTraining = (int) dbr.insert("POINTTRAININGS", null, values);
         return idPointTraining;
+    }
+
+    private static PointTraining insertPointTraining(AplicationWifi aplicationWifi, Double x, Double y) {
+        PointTraining pointTraining = new PointTraining(aplicationWifi.getTraining().getId(), x, y);
+        loadComun(pointTraining, null, null, System.currentTimeMillis(), 1);
+        int idPointTraining = insertPointTraining(pointTraining);
+        pointTraining.setId(idPointTraining);
+        return pointTraining;
     }
 
     private static int updatePointTraining(PointTraining p, String whereClause, String[] whereArgs){
         saveLoadPointTraining(p);
         //int filasAfectadas = (int) db.update("PLANES", values, "id = ?", new String[]{String.valueOf(p.getId())});
-        int filasAfectadas = (int) db.update("POINTTRAININGS", values, whereClause, whereArgs);
+        int filasAfectadas = (int) dbr.update("POINTTRAININGS", values, whereClause, whereArgs);
         return filasAfectadas;
     }
 
     private static void saveLoadPointTrainingWifi(PointTrainingWifi p){
         values.put("POINTTRAINING", p.getPointtraining());
         values.put("WIFI", p.getWifi());
+        values.put("level", p.getLevel());
+        values.put("timestamp", p.getTimestamp());
         valuesComun(p);
     }
 
     private static int insertPointTrainingWifi(PointTrainingWifi p){
         saveLoadPointTrainingWifi(p);
-        int idPointTrainingWifi = (int) db.insert("POINTTRAININGWIFIS", null, values);
+        int idPointTrainingWifi = (int) dbr.insert("POINTTRAININGWIFIS", null, values);
         return idPointTrainingWifi;
+    }
+
+    private static PointTrainingWifi insertPointTrainingWifi(PointTraining p, Wifi w, Integer level, Long timestamp){
+        PointTrainingWifi pointTrainingWifi = new PointTrainingWifi(p.getId(), w.getId(), level, timestamp);
+        loadComun(pointTrainingWifi, null, null, System.currentTimeMillis(), 1);
+        int tPointTrainingWifi = insertPointTrainingWifi(pointTrainingWifi);
+        pointTrainingWifi.setId(tPointTrainingWifi);
+        return pointTrainingWifi;
     }
 
     private static int updatePointTrainingWifi(PointTrainingWifi p, String whereClause, String[] whereArgs){
         saveLoadPointTrainingWifi(p);
         //int filasAfectadas = (int) db.update("PLANES", values, "id = ?", new String[]{String.valueOf(p.getId())});
-        int filasAfectadas = (int) db.update("POINTTRAININGWIFIS", values, whereClause, whereArgs);
+        int filasAfectadas = (int) dbr.update("POINTTRAININGWIFIS", values, whereClause, whereArgs);
         return filasAfectadas;
     }
 
@@ -348,38 +383,50 @@ public class WifiPosManager {
 
     private static int insertTraining(Training t){
         saveLoadTraining(t);
-        int idTraining = (int) db.insert("TRAININGS", null, values);
+        int idTraining = (int) dbr.insert("TRAININGS", null, values);
         return idTraining;
+    }
+
+    private static Training insertTraining(AplicationWifi aplicationWifi){
+        Training training = new Training(aplicationWifi.getPlane().getId());
+        loadComun(training, null, null, System.currentTimeMillis(), 1);
+        int idTraining = insertTraining(training);
+        training.setId(idTraining);
+        return training;
     }
 
     private static int updateTraining(Training p, String whereClause, String[] whereArgs){
         saveLoadTraining(p);
         //int filasAfectadas = (int) db.update("PLANES", values, "id = ?", new String[]{String.valueOf(p.getId())});
-        int filasAfectadas = (int) db.update("TRAININGS", values, whereClause, whereArgs);
+        int filasAfectadas = (int) dbr.update("TRAININGS", values, whereClause, whereArgs);
         return filasAfectadas;
     }
 
     private static void saveLoadWifi(Wifi w){
         values.put("BSSID", w.getBSSID());
         values.put("capabilities", w.getCapabilities());
-        values.put("level", w.getLevel());
         values.put("frequency", w.getFrequency());
-        values.put("timestamp", w.getTimestamp());
-        values.put("seen", w.getSeen());
-        values.put("isAutoJoinCandidate", w.getIsAutoJoinCandidate());
         valuesComun(w);
     }
 
     private static int insertWifi(Wifi w){
         saveLoadWifi(w);
-        int idWifi= (int) db.insert("WIFIS", null, values);
+        int idWifi= (int) dbr.insert("WIFIS", null, values);
         return idWifi;
+    }
+
+    private static Wifi insertWifi(ScanResult scanResult){
+        Wifi wifi = new Wifi(scanResult.SSID, scanResult.BSSID, scanResult.capabilities, scanResult.frequency);
+        loadComun(wifi, null, null, System.currentTimeMillis(), 1);
+        int idWifi = insertWifi(wifi);
+        wifi.setId(idWifi);
+        return wifi;
     }
 
     private static int updateWifi(Wifi w, String whereClause, String[] whereArgs){
         saveLoadWifi(w);
         //int filasAfectadas = (int) db.update("PLANES", values, "id = ?", new String[]{String.valueOf(p.getId())});
-        int filasAfectadas = (int) db.update("WIFIS", values, whereClause, whereArgs);
+        int filasAfectadas = (int) dbr.update("WIFIS", values, whereClause, whereArgs);
         return filasAfectadas;
     }
 
@@ -391,68 +438,97 @@ public class WifiPosManager {
         cm.setActive(active);
     }
 
-    public static void savePoint(List<ScanResult> wifis, AplicationWifi aplicationWifi, Double x, Double y){
+    public static void savePoint(List<ScanResult> lstScanResult, AplicationWifi aplicationWifi, Double x, Double y) {
         try {
+
+            dbr = wifiPosDB.getWritableDatabase();
+            dbr.beginTransaction();
+            values = new ContentValues();
             //entrenament
-            //comprobar si existeix entrenament amb eixe pla
-            //si no existeix crearlo
-            //carregar el entrenament
-            //posarlo a una variable estática
-            db = wifiPosDB.getWritableDatabase();
-            db.beginTransaction();
-            if (aplicationWifi.getTraining()==null) {
-                Training training = new Training(aplicationWifi.getPlane().getId());
-                loadComun(training, null, null, System.currentTimeMillis(), 1);
-                int idTraining = insert(training, false);
-                training.setId(idTraining);
+            //comprobar si existeix entrenament amb eixe pla si no existeix crearlo
+            if (aplicationWifi.getTraining() == null) {
+                Training training = insertTraining(aplicationWifi);
                 aplicationWifi.setTraining(training);
             }
-            db.setTransactionSuccessful();
-        }catch (Exception e){
+            //punt d'entrenament
+            //comprobar si existeix un que te les coordenades iguals o que els separen x e y < 20
+            List<PointTraining> lstPointTraining = _listPointTraining(" " +
+                    "WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
+            PointTraining pointTraining = null;
+            if (lstPointTraining.isEmpty()) {
+                pointTraining = insertPointTraining(aplicationWifi, x, y);
+            } else {
+                for (PointTraining p : lstPointTraining) {
+                    if ((p.getX() - x < 20) && (p.getY() - y < 20)) {
+                        pointTraining = p;
+                        break;
+                    }
+                }
+                if (pointTraining == null)
+                    pointTraining = insertPointTraining(aplicationWifi, x, y);
+            }
+            //wifi
+            // comprobar si existeix un wifi amb la mateixa MAC
+            List<Wifi> lstWifiSaveorUpdate = new ArrayList<Wifi>();
+            List<ScanResult> lstScanResultSaveorUpdate = new ArrayList<ScanResult>();
+            for (ScanResult scanResult : lstScanResult) {
+                List<Wifi> lstWifi = _listWifi(" WHERE BSSID = '" + scanResult.BSSID + "' AND ACTIVE = 1");
+                Wifi wifi;
+                if (lstWifi.isEmpty()) {
+                    wifi = insertWifi(scanResult);
+                }
+                else{
+                    wifi = lstWifi.get(0);
+                    int filasAfectadas = updateWifi(wifi, "id = ?", new String[]{String.valueOf(wifi.getId())});
+                    Log.i("updateWifi", "BSSID:" + wifi.getBSSID() + " filas:" + filasAfectadas);
+                }
+                lstWifiSaveorUpdate.add(wifi);
+            }
+            //pointsTrainingWifi de eixe punt
+            List<PointTrainingWifi> lstPontsTrainingWifi = _listPointTrainingWifi(
+                    " WHERE POINTTRAINING = " + pointTraining.getId() + " AND ACTIVE = 1");
+            int i = 0;
+            for (Wifi wifi:lstWifiSaveorUpdate) {
+                ScanResult scanResult =lstScanResult.get(i);
+                if(!lstPontsTrainingWifi.isEmpty()) {
+                    boolean update = false;
+                    PointTrainingWifi p;
+                    for (PointTrainingWifi pointTrainingWifi : lstPontsTrainingWifi) {
+                        if (pointTrainingWifi.getWifi() == wifi.getId()) {
+                            int filasAfectadas = updatePointTrainingWifi(pointTrainingWifi, "id = ?", new String[]{String.valueOf(pointTrainingWifi.getId())});
+                            p = pointTrainingWifi;
+                            update = true;
+                            break;
+                        }
+                    }
+                    if (!update) {
+                        insertPointTrainingWifi(pointTraining, wifi, scanResult.level, scanResult.timestamp);
+                    }
+                }
+                else
+                    insertPointTrainingWifi(pointTraining, wifi, scanResult.level, scanResult.timestamp);
+                i++;
+            }
+            dbr.setTransactionSuccessful();
+        } catch (Exception e) {
             Log.e(TAG.toString(), "savePoint--->" + e.getMessage());
             throw e;
+        } finally {
+            values = null;
+            try {
+                dbr.endTransaction();
+            }catch(Exception ex){
+                Log.e(TAG.toString(), "savePoint.finally.db.endTransaction()--->" + ex.getMessage());
+            }
+            List<PointTraining> lstPointTraining2 = _listPointTraining(
+                    " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
+            List<PointTrainingWifi> lstPointTrainingWifi = _listPointTrainingWifi(" WHERE ACTIVE = 1");
+            List<Wifi> lstWifi = _listWifi(" WHERE ACTIVE = 1");
+            close(dbw, null);
+            close(dbr, null);
         }
-        finally{
-            db.endTransaction();
-            close(db, null);
-        }
-
-        //punt d'entrenament
-        //si anteriorment no hi ha entrenament afegirne un
-        //si no
-        //comprobar si existeix punt d'entrenament
-        //identrenament y veure si les coordenades no difereixen molt
-        //si no esta crearlo afegint-li el id del entrenament d'avanç
-
-        //wifi
-        //recorrer el bucle
-        //comprobar si hi ha wifi per la mac
-        //si no hi ha insertar
-
-        //punt d'entrenament-wifi
-        //recorrer el bucle
-        //insertar nou
-
-
-        /*SQLiteDatabase db = null;
-        db.execSQL("INSERT INTO PLANES VALUES ( null, '0x7f02007f', 'pla prova', " +
-                "'primer pla de prova'," + System.currentTimeMillis() + " ," + System.currentTimeMillis() + " , 1)");*/
-    }
-/*
-    public static Training saveTraining(){
-
     }
 
-    public static Training training(){
-
-    }
-
-    private static Trainig training(){}
-
-    public static void insertTraining(){
-
-    }
-*/
     private static void close(SQLiteDatabase db, Cursor c){
         if(c != null && !c.isClosed())
             c.close();

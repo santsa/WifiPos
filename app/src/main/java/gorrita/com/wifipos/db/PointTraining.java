@@ -5,19 +5,6 @@ package gorrita.com.wifipos.db;
  */
 public class PointTraining extends Comun{
 
-    public static final String createTable =
-            " CREATE TABLE POINTTRAININGS (" +
-                    " ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    " TRAINING INTEGER," +
-                    " X REAL NOT NULL," +
-                    " Y REAL NOT NULL," +
-                    " DESCRIPTION TEXT," +
-                    " DATACREATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
-                    " DATAUPDATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
-                    " ACTIVE INTEGER NOT NULL DEFAULT 1, " +
-                    " FOREIGN KEY (TRAINING) REFERENCES TRAININGS (ID)" +
-                    " )";
-
     public PointTraining() {}
 
     public PointTraining(Integer training, Double x, Double y) {

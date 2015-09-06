@@ -25,6 +25,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import gorrita.com.wifipos.db.PointTraining;
+import gorrita.com.wifipos.db.PointTrainingWifi;
+import gorrita.com.wifipos.db.Wifi;
 import gorrita.com.wifipos.db.WifiPosManager;
 
 
@@ -211,7 +214,7 @@ public class WifiFragment extends DialogFragment {
                     listWifiScanSave.add(listWifiScan.get(resultArray.keyAt(i)));
                     Log.i("CodecTestActivity", listViewWifi.getAdapter().getItem(resultArray.keyAt(i)).toString());
                 }
-            WifiPosManager.savePoint(listWifiScanSave,(AplicationWifi)getActivity().getApplication(),
+            WifiPosManager.savePoint(listWifiScanSave, (AplicationWifi) getActivity().getApplication(),
                     Double.valueOf(editWifiX.getText().toString()), Double.valueOf(this.editWifiY.getText().toString()));
             Toast.makeText(this.getActivity(), getString(R.string.ok_save_point), Toast.LENGTH_SHORT).show();
             Thread.sleep(1000);

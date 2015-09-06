@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "gorrita.com.wifipos"
-        minSdkVersion 14
+        minSdkVersion 17
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -24,4 +24,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.google.android.gms:play-services:7.5.0'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
 }
