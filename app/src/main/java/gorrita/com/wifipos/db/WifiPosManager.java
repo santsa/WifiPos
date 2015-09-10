@@ -301,6 +301,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadPlane(Plane p){
+        values.clear();
         values.put("FILE", p.getFile().toString());
         values.put("NAME", p.getName().toString());
         valuesComun(p);
@@ -320,6 +321,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadPointTraining(PointTraining p){
+        values.clear();
         values.put("TRAINING", p.getTraining());
         values.put("X", p.getX());
         values.put("Y", p.getY());
@@ -348,6 +350,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadPointTrainingWifi(PointTrainingWifi p){
+        values.clear();
         values.put("POINTTRAINING", p.getPointtraining());
         values.put("WIFI", p.getWifi());
         values.put("level", p.getLevel());
@@ -377,6 +380,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadTraining(Training t){
+        values.clear();
         values.put("PLANE", t.getPlane());
         valuesComun(t);
     }
@@ -403,6 +407,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadWifi(Wifi w){
+        values.clear();
         values.put("BSSID", w.getBSSID());
         values.put("capabilities", w.getCapabilities());
         values.put("frequency", w.getFrequency());
@@ -443,7 +448,8 @@ public class WifiPosManager {
 
             dbr = wifiPosDB.getWritableDatabase();
             dbr.beginTransaction();
-            values = new ContentValues();
+            if (values == null)
+                values = new ContentValues();
             //entrenament
             //comprobar si existeix entrenament amb eixe pla si no existeix crearlo
             if (aplicationWifi.getTraining() == null) {
@@ -459,7 +465,7 @@ public class WifiPosManager {
                 pointTraining = insertPointTraining(aplicationWifi, x, y);
             } else {
                 for (PointTraining p : lstPointTraining) {
-                    if ((p.getX() - x < 20) && (p.getY() - y < 20)) {
+                    if ((Math.abs(p.getX() - x) < 20) && (Math.abs(p.getY() - y) < 20)) {
                         pointTraining = p;
                         break;
                     }

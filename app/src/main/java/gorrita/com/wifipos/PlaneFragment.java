@@ -67,10 +67,6 @@ public class PlaneFragment extends Fragment implements View.OnTouchListener/*, V
                     }
                 }
             }
-            if (aplicationWifi.getTraining()!=null){
-                List<PointTraining> lstPointTraining = WifiPosManager.listPointTraining(
-                        " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
-            }
             if (getArguments() != null) {
                 mParam1 = getArguments().getString(ARG_PARAM1);
                 mParam2 = getArguments().getString(ARG_PARAM2);
