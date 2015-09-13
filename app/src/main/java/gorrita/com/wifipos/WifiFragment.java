@@ -3,6 +3,7 @@ package gorrita.com.wifipos;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -31,7 +32,7 @@ import gorrita.com.wifipos.db.Wifi;
 import gorrita.com.wifipos.db.WifiPosManager;
 
 
-public class WifiFragment extends DialogFragment {
+public class WifiFragment extends DialogFragment implements DialogInterface.OnDismissListener{
 
     //private OnFragmentInteractionListener mListener;
     private EditText mEditText;
@@ -50,8 +51,11 @@ public class WifiFragment extends DialogFragment {
     private List<ScanResult> listWifiScanSave;
     private Button btnSaveWifi;
 
+    private OnFragmentInteractionListener mListener;
+    private int numPointTraining;
+
     /**
-     * Use this factory method to create a new instance of
+     * Use this factory method to create as new instance of
      * this fragment using the provided parameters.
      *
      * @param event Parameter 1.
@@ -172,7 +176,6 @@ public class WifiFragment extends DialogFragment {
         }
     }
 
-    //TODO: COMPROBAR QUE NO SELECCIONE ELS QUE TINGUEN EL ERROR O LA POTENCIA SIGA 0
     public void onAllChecksClick (View view, boolean selected) {
         try {
             int count = listViewWifi.getCount();
@@ -185,7 +188,6 @@ public class WifiFragment extends DialogFragment {
         }
     }
 
-    //TODO: ELIMINAR TOTS ELS WIFIS QUE NO ESTIGUEN SELECCIONATS
     private void btnSaveWifiEnabledDisabbled() {
         try{
             SparseBooleanArray resultArray = listViewWifi.getCheckedItemPositions();
@@ -203,9 +205,11 @@ public class WifiFragment extends DialogFragment {
         }
     }
 
-    //TODO: SAVE ALL
     public void onSelectedChecksClick () {
         try{
+            AplicationWifi aplicationWifi = (AplicationWifi) getActivity().getApplication();
+            if (aplicationWifi.getPointTrainings() != null)
+                numPointTraining = aplicationWifi.getPointTrainings().size();
             SparseBooleanArray resultArray = listViewWifi.getCheckedItemPositions();
             listWifiScanSave = new ArrayList<ScanResult>();
             int size = resultArray.size();
@@ -214,10 +218,8 @@ public class WifiFragment extends DialogFragment {
                     listWifiScanSave.add(listWifiScan.get(resultArray.keyAt(i)));
                     Log.i("CodecTestActivity", listViewWifi.getAdapter().getItem(resultArray.keyAt(i)).toString());
                 }
-            WifiPosManager.savePoint(listWifiScanSave, (AplicationWifi) getActivity().getApplication(),
+            WifiPosManager.savePoint(listWifiScanSave, aplicationWifi,
                     Double.valueOf(editWifiX.getText().toString()), Double.valueOf(this.editWifiY.getText().toString()));
-            Toast.makeText(this.getActivity(), getString(R.string.ok_save_point), Toast.LENGTH_SHORT).show();
-            Thread.sleep(1000);
             this.dismiss();
         }catch (Exception ex){
             Log.e(this.getClass().getName(), "onSelectedChecksClick--->" + ex.getMessage());
@@ -284,7 +286,7 @@ public class WifiFragment extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            //mListener = (OnFragmentInteractionListener) activity;
+            mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             Log.e(this.getClass().getName(), "onAttach--->" + e.getMessage());
             throw e;
@@ -294,7 +296,13 @@ public class WifiFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        //mListener = null;
+        mListener = null;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        mListener.closeDialog(numPointTraining);
+        super.onDismiss(dialog);
     }
 
 }

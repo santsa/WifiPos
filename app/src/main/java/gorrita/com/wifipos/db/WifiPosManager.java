@@ -458,13 +458,15 @@ public class WifiPosManager {
             }
             //punt d'entrenament
             //comprobar si existeix un que te les coordenades iguals o que els separen x e y < 20
-            List<PointTraining> lstPointTraining = _listPointTraining(" " +
-                    "WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
+            //List<PointTraining> lstPointTraining = _listPointTraining(" WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
+            if (aplicationWifi.getPointTrainings() == null)
+                aplicationWifi.setPointTrainings(new ArrayList<PointTraining>());
             PointTraining pointTraining = null;
-            if (lstPointTraining.isEmpty()) {
+            if (aplicationWifi.getPointTrainings().isEmpty()) {
                 pointTraining = insertPointTraining(aplicationWifi, x, y);
+                aplicationWifi.getPointTrainings().add(pointTraining);
             } else {
-                for (PointTraining p : lstPointTraining) {
+                for (PointTraining p : aplicationWifi.getPointTrainings()) {
                     if ((Math.abs(p.getX() - x) < 20) && (Math.abs(p.getY() - y) < 20)) {
                         pointTraining = p;
                         break;
@@ -472,6 +474,7 @@ public class WifiPosManager {
                 }
                 if (pointTraining == null)
                     pointTraining = insertPointTraining(aplicationWifi, x, y);
+                    aplicationWifi.getPointTrainings().add(pointTraining);
             }
             //wifi
             // comprobar si existeix un wifi amb la mateixa MAC
@@ -516,7 +519,9 @@ public class WifiPosManager {
                 i++;
             }
             dbr.setTransactionSuccessful();
+
         } catch (Exception e) {
+            aplicationWifi.getPointTrainings().clear();
             Log.e(TAG.toString(), "savePoint--->" + e.getMessage());
             throw e;
         } finally {
@@ -526,10 +531,6 @@ public class WifiPosManager {
             }catch(Exception ex){
                 Log.e(TAG.toString(), "savePoint.finally.db.endTransaction()--->" + ex.getMessage());
             }
-            List<PointTraining> lstPointTraining2 = _listPointTraining(
-                    " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
-            List<PointTrainingWifi> lstPointTrainingWifi = _listPointTrainingWifi(" WHERE ACTIVE = 1");
-            List<Wifi> lstWifi = _listWifi(" WHERE ACTIVE = 1");
             close(dbw, null);
             close(dbr, null);
         }
@@ -549,4 +550,5 @@ public class WifiPosManager {
     public static void setWifiPosDB(WifiPosDB wifiPosDB) {
         WifiPosManager.wifiPosDB = wifiPosDB;
     }
+
 }

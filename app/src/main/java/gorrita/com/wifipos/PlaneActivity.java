@@ -1,6 +1,7 @@
 package gorrita.com.wifipos;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +13,7 @@ public class PlaneActivity extends Activity implements OnFragmentInteractionList
 
     WifiFragment wifiFragment;
     private CharSequence file = "0x7f02007f";
+    PlaneFragment planeFragment;
 
     @Override
     public void openDialog(MotionEvent event) {
@@ -24,7 +26,9 @@ public class PlaneActivity extends Activity implements OnFragmentInteractionList
     }
 
     @Override
-    public void closeDialog() {
+    public void closeDialog(int numPointTraining) {
+        newInstanceFragmentPlane();
+        //planeFragment.reloadPointTrainings(numPointTraining);
     }
 
     @Override
@@ -32,12 +36,22 @@ public class PlaneActivity extends Activity implements OnFragmentInteractionList
         try {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_plane);
-            PlaneFragment planeFragment = (PlaneFragment) getFragmentManager().findFragmentById(R.id.plane_fragment);
-            //plano.setmListener(this);
+            //PlaneFragment planeFragment = (PlaneFragment) getFragmentManager().findFragmentById(R.id.plane_fragment);
+            newInstanceFragmentPlane();
         }
         catch(Exception e){
             Log.e(this.getClass().getName(), "onCreate--->" + e.getMessage());
         }
+    }
+
+    private void newInstanceFragmentPlane(){
+        String id = "planeFragment ";
+        Bundle arguments = new Bundle();
+        arguments.putString("id", id);
+        planeFragment = PlaneFragment.newInstance(arguments);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(android.R.id.content, planeFragment, PlaneFragment.TAG);
+        ft.commit();
     }
 
     @Override
@@ -61,4 +75,5 @@ public class PlaneActivity extends Activity implements OnFragmentInteractionList
 
         return super.onOptionsItemSelected(item);
     }
+
 }

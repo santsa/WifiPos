@@ -2,11 +2,17 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="wrap_content"
     android:layout_height="wrap_content" tools:context="gorrita.com.wifipos.PlaneFragment"
     android:id="@+id/fragment_ini">
-
-
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/plane"
         android:layout_gravity="center" />
+    <!--
+        <ImageView
+            android:layout_width="80dip"
+            android:layout_height="80dip"
+            android:id="@+id/pointtraining"
+            android:tint="@android:color/holo_red_dark"
+            android:layout_gravity="center"/>
+            -->
 </FrameLayout>
