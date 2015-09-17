@@ -2,6 +2,12 @@
     <string name="app_name">WifiPos</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Configuración</string>
+    <string name="about">Instrucciones</string>
+    <string name="action_exit">Salir</string>
+    <string name="textAboutof">Este programa ha sido desarrollado como ejemplo en el curso de Android para demostrar cómo se pueden lanzar nuevas actividades desde la actividad principal.</string>
+    <string name="lblAboutof">Acerca de...</string>
+    <string name="tittle_training">Entrenamiento</string>
+    <string name="summary_training">Modo por defecto entrenamiento o posicionamento</string>
 
     <!-- PlaneFragment -->
     <string name="btn_ini">Inicio</string>

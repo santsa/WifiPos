@@ -34,6 +34,11 @@
             android:screenOrientation="landscape"
             android:label="@string/title_activity_plane" >
         </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/lblAboutof"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".Prefs" />
     </application>
 
 </manifest>

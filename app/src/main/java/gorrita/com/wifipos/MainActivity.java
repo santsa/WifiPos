@@ -30,14 +30,9 @@ public class MainActivity extends Activity {
              setContentView(R.layout.activity_main);
              WifiPosManager.intDB(this);
              //Plane p = WifiPosManager.listPlanes();
-             Button btnIni = (Button)findViewById(R.id.btnIni);
              this.registerReceiver(this.WifiStateChangedReceiver,
                      new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
-             btnIni.setOnClickListener(new View.OnClickListener() {
-                 public void onClick(View arg0) {
-                     MainActivity.this.open();
-                 }
-             });
+             configureButtons();
              Bundle extra = this.getIntent().getExtras();
              if (extra != null) {
                  if (extra.containsKey(String.valueOf(R.string.wifi)) &&
@@ -48,15 +43,37 @@ public class MainActivity extends Activity {
              Log.e(this.getClass().getName(),"onCreate--->" + e.getMessage());
          }
     }
-/*
-    private void initBD(){
-        try{
-            WifiBD wifiBD = new WifiBD(this);//WifiBD.newInstance(this);
-        }catch(Exception e){
-            Log.e(this.getClass().getName(),"initBD--->" + e.getMessage());
+
+        private void configureButtons(){
+            Button btnIni = (Button)findViewById(R.id.btnIni);
+            btnIni.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View arg0) {
+                    MainActivity.this.open();
+                }
+            });
+            Button btnSettings = (Button)findViewById(R.id.settings);
+            btnSettings.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View arg0) {
+                    Intent i = new Intent(MainActivity.this, Prefs.class);
+                    startActivity(i);
+                }
+            });
+            Button btnAbout = (Button)findViewById(R.id.about);
+            btnAbout.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View arg0) {
+                    Intent i = new Intent(MainActivity.this, AboutActivity.class);
+                    startActivity(i);
+                }
+            });
+            Button btnExit = (Button)findViewById(R.id.exit);
+            btnExit.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View arg0) {
+                    MainActivity.this.finish();
+                }
+            });
         }
-    }
-*/
+
+
     private void open(){
         try {
             //AplicationWifi aplicationWifi = (AplicationWifi)this.getApplication();
