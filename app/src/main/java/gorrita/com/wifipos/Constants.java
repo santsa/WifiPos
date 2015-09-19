@@ -5,8 +5,11 @@ package gorrita.com.wifipos;
  */
 public class Constants {
 
-    public static final String DATABASE_NAME = "WifiPos";
-    public static int newVersion = 1;
+    public static final CharSequence PLANEFRAGMENTTAG = "PlaneTrainingFragment";
+        public static final int ACTION_POSITION = 90000000;
+
+    public static final CharSequence DATABASE_NAME = "WifiPos";
+    public static int newVersion = 3;
 
     public static final CharSequence createTablePlanes =
             " CREATE TABLE PLANES (" +

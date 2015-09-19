@@ -1,0 +1,16 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:id="@+id/contenedor_training"
+    tools:context="gorrita.com.wifipos.PlaneTrainingActivity">
+
+    <fragment
+        android:id="@+id/plane_training_fragment"
+        android:name="gorrita.com.wifipos.PlaneTrainingFragment"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+</LinearLayout>

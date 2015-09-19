@@ -4,15 +4,18 @@
     <string name="action_settings">Settings</string>
     <string name="about">About</string>
     <string name="action_exit">Exit</string>
-    <string name="textAboutof">Este programa ha sido desarrollado como ejemplo en el curso de Android para demostrar cómo se pueden lanzar nuevas actividades desde la actividad principal.</string>
+    <string name="textAboutof">This program is aimed at indoor positioning via Wifi</string>
     <string name="lblAboutof">About of...</string>
-    <string name="tittle_training">Training</string>
+    <string name="tittle_training">Entrenamiento</string>
     <string name="summary_training">Mode default training or position</string>
 
-    <!-- PlaneFragment -->
+    <!-- PlaneTrainingFragment -->
     <string name="btn_ini">Start</string>
     <string name="title_activity_plane">PlaneActivity</string>
     <string name="plane_not_exist">Plane not Exist</string>
+    <!-- menu -->
+    <string name="access_denied">To access mode must have stored positioning training points</string>
+    <string name="tittle_position">Position</string>
 
     <!-- WI-FI-->
     <string name="wifi">WI-FI</string>
@@ -35,5 +38,6 @@
     <string name="point_y">Coord. Y</string>
     <string name="empty_wifi">There is not any Wi-Fi</string>
     <string name="ok_save_point">The point is save</string>
+    <string name="title_activity_plane_position">PlanePositionActivity</string>
 
 </resources>

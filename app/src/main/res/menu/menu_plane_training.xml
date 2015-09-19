@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="gorrita.com.wifipos.PlaneTrainingActivity">
+
+    <item android:title="@string/action_settings"
+        android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:orderInCategory="5"
+        app:showAsAction="never"/>
+    <item android:title="@android:string/cancel"
+        android:id="@+id/accion_exit"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:orderInCategory="10"
+        app:showAsAction="ifRoom|withText"/>
+</menu>

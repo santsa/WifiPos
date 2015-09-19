@@ -9,11 +9,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-<!--
+    <!--
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
--->
+    -->
     <application
         android:name=".AplicationWifi"
         android:allowBackup="true"
@@ -23,22 +22,31 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".PlaneActivity"
-            android:screenOrientation="landscape"
-            android:label="@string/title_activity_plane" >
+            android:name=".PlaneTrainingActivity"
+            android:label="@string/title_activity_plane"
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".AboutActivity"
             android:label="@string/lblAboutof"
             android:theme="@android:style/Theme.Dialog" />
-        <activity android:name=".Prefs" />
+        <activity
+            android:name=".PreferencesActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".PlanePositionActivity"
+            android:label="@string/title_activity_plane_position"
+            android:screenOrientation="landscape" >
+        </activity>
     </application>
 
 </manifest>

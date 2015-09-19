@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="gorrita.com.wifipos.PlanePositionActivity">
+
+    <item android:title="@string/tittle_training"
+        android:id="@+id/accion_position_training"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:orderInCategory="10"
+        app:showAsAction="ifRoom|withText"/>
+    <item android:title="@android:string/cancel"
+        android:id="@+id/accion_position_exit"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:orderInCategory="20"
+        app:showAsAction="ifRoom|withText"/>
+</menu>
+
+

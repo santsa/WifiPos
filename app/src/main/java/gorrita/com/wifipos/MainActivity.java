@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +18,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.List;
+
+import gorrita.com.wifipos.db.Plane;
+import gorrita.com.wifipos.db.PointTraining;
+import gorrita.com.wifipos.db.Training;
 import gorrita.com.wifipos.db.WifiPosManager;
 
 
@@ -54,7 +61,7 @@ public class MainActivity extends Activity {
             Button btnSettings = (Button)findViewById(R.id.settings);
             btnSettings.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View arg0) {
-                    Intent i = new Intent(MainActivity.this, Prefs.class);
+                    Intent i = new Intent(MainActivity.this, PreferencesActivity.class);
                     startActivity(i);
                 }
             });
@@ -95,8 +102,15 @@ public class MainActivity extends Activity {
                                         try {
                                             if (wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
                                                 wifiManager.setWifiEnabled(true);
-                                            Intent intent = new Intent(MainActivity.this, PlaneActivity.class);
-                                            startActivity(intent);
+                                            if (initPlane()) {
+                                                Intent intent;
+                                                if (configureTraining()) {
+                                                    intent = new Intent(MainActivity.this, PlaneTrainingActivity.class);
+                                                } else {
+                                                    intent = new Intent(MainActivity.this, PlanePositionActivity.class);
+                                                }
+                                                startActivity(intent);
+                                            }
                                         }
                                         catch (Exception ex){
                                             Log.e(this.getClass().getName(),"AlertDialog.Builder.onClick-->" + ex.getMessage());
@@ -124,6 +138,42 @@ public class MainActivity extends Activity {
         }catch(Exception e){
             Log.e(this.getClass().getName(),"open--->" + e.getMessage());
         }
+    }
+
+    private CharSequence file = "0x7f02007f";
+
+    private boolean initPlane(){
+        aplicationWifi = (AplicationWifi) getApplication();
+        if(aplicationWifi.getPlane() == null) {
+            List<Plane> lstPlane= WifiPosManager.listPlanes(" where FILE ='" + file + "' AND ACTIVE = 1");
+            if(!lstPlane.isEmpty()) {
+                aplicationWifi.setPlane(lstPlane.get(0));
+                List<Training> lstTraining = WifiPosManager.listTraining(
+                        " WHERE PLANE = " + aplicationWifi.getPlane().getId()  + " AND ACTIVE = 1");
+                if(!lstTraining.isEmpty()) {
+                    aplicationWifi.setTraining(lstTraining.get(0));
+                    if(aplicationWifi.getPointTrainings()==null || aplicationWifi.getPointTrainings().isEmpty()) {
+                        List<PointTraining> lstPointTrainings = WifiPosManager.listPointTraining(
+                                " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
+                        aplicationWifi.setPointTrainings(lstPointTrainings);
+                    }
+                }
+            }
+            else{
+                Toast.makeText(this, getString(R.string.plane_not_exist), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean configureTraining(){
+        aplicationWifi = (AplicationWifi) getApplication();;
+        if(aplicationWifi.getPointTrainings()!=null && !aplicationWifi.getPointTrainings().isEmpty()) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            return prefs.getBoolean("training", true);
+        }
+        return true;
     }
 
     @Override
@@ -191,7 +241,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_plane, menu);
+        getMenuInflater().inflate(R.menu.menu_plane_training, menu);
         return true;
     }
 
