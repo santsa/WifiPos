@@ -4,10 +4,18 @@
     <string name="action_settings">Settings</string>
     <string name="about">About</string>
     <string name="action_exit">Exit</string>
-    <string name="textAboutof">This program is aimed at indoor positioning via Wifi</string>
+    <string name="textAboutof">This program is aimed at indoor positioning via Wifi.
+    The bar program has two modes Training mode and positioning mode.
+    To enter positioning mode must be completed the training mode , this mode will be complete once at least two training points per plane have saved.
+    These points used later to calculate positioning mode the current position.
+    Access to positioning mode can be either from the menu or training mode from the main screen to access from this must be two conditions, so entrenemiento must be completed and configured by default.
+    </string>
     <string name="lblAboutof">About of...</string>
-    <string name="tittle_training">Entrenamiento</string>
+    <string name="tittle_training">Training</string>
     <string name="summary_training">Mode default training or position</string>
+    <string name="default_number_refresh">5</string>
+    <string name="summary_refresh">Refresh time in seconds to the position</string>
+    <string name="tittle_refresh">Refresh Position</string>
 
     <!-- PlaneTrainingFragment -->
     <string name="btn_ini">Start</string>

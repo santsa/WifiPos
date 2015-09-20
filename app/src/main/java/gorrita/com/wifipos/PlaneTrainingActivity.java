@@ -60,8 +60,8 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        AplicationWifi aplicationWifi = (AplicationWifi) getApplication();;
-        if(aplicationWifi.getPointTrainings()!=null && !aplicationWifi.getPointTrainings().isEmpty()) {
+        AplicationWifi aplicationWifi = (AplicationWifi) getApplication();
+        if(aplicationWifi.getPointTrainings()!=null && aplicationWifi.getPointTrainings().size() > 1) {
             menu.add(Menu.NONE, Constants.ACTION_POSITION, Menu.NONE, R.string.tittle_position)
                     .setIcon(android.R.drawable.ic_menu_directions);
         }
@@ -100,15 +100,6 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private boolean p(){
-        AplicationWifi aplicationWifi = (AplicationWifi) getApplication();;
-        if(aplicationWifi.getPointTrainings()!=null && !aplicationWifi.getPointTrainings().isEmpty()) {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            return prefs.getBoolean("training", true);
-        }
-        return true;
     }
 
 }

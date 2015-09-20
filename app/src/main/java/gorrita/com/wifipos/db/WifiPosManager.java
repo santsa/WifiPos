@@ -239,60 +239,7 @@ public class WifiPosManager {
         cm.setActive(c.getInt(c.getColumnIndex(ACTIVE.toString())));
     }
 
-    private static void update(Comun c){
-        try{
-            dbr = wifiPosDB.getWritableDatabase();
-            if (c instanceof Plane)
-                updatePlane((Plane) c, null, null);
-            else if (c instanceof Plane)
-                updatePointTraining((PointTraining) c, null, null);
-            else if (c instanceof Plane)
-                updatePointTrainingWifi((PointTrainingWifi) c, null, null);
-            else if (c instanceof Plane)
-                updateTraining((Training) c, null, null);
-            else if (c instanceof Plane)
-                updateWifi((Wifi) c, null, null);
-        }
-        catch (Exception ex){
-            Log.e(TAG.toString(), "update--->" + ex.getMessage());
-            throw ex;
-        }
-        finally{
-            close(dbr, null);
-        }
-    }
-
-    private static int insert(Comun c, boolean close){
-
-        values = null;
-        int id = 0;
-        try{
-            if(dbr == null)
-                dbr = wifiPosDB.getWritableDatabase();
-            values = new ContentValues();
-            if (c instanceof Plane)
-                id = insertPlane((Plane) c);
-            else if (c instanceof PointTraining)
-                id = insertPointTraining((PointTraining) c);
-            else if (c instanceof PointTrainingWifi)
-                id = insertPointTrainingWifi((PointTrainingWifi) c);
-            else if (c instanceof Training)
-                id = insertTraining((Training) c);
-            else if (c instanceof Wifi)
-                id = insertWifi((Wifi) c);
-            return id;
-        }
-        catch (Exception ex){
-            Log.e(TAG.toString(), "insert--->" + ex.getMessage());
-            throw ex;
-        }
-        finally{
-            if (close)
-                close(dbr, null);
-        }
-    }
-
-    private static void valuesComun(Comun c){
+     private static void valuesComun(Comun c){
         String desc = c.getDescription()==null?null:c.getDescription().toString();
         values.put("DESCRIPTION", desc);
         values.put("DATACREATED", c.getDataCreated());

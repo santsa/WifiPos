@@ -7,4 +7,11 @@
         android:layout_height="match_parent"
         android:id="@+id/planePosition"
         android:layout_gravity="center" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/positionPlane"
+        android:src="@android:drawable/ic_menu_mylocation"/>
+
 </FrameLayout>

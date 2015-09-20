@@ -4,10 +4,18 @@
     <string name="action_settings">Configuración</string>
     <string name="about">Instrucciones</string>
     <string name="action_exit">Salir</string>
-    <string name="textAboutof">Este programa tiene como finalidad el posicionamiento en interiores vía Wifi</string>
+    <string name="textAboutof">Este programa tiene como finalidad el posicionamiento en interiores vía Wifi.
+    El programa tiene dos modos, modo Entrenamiento y modo posicionamiento.
+    Para acceder en modo posicionamiento debe de estar completado el modo entrenamiento, dicho modo estará completo una vez se tengan guardados un mínimo de dos puntos de entrenamiento por plano.
+    Estos puntos los utilizará más tarde el modo posicionamiento para calcular la posición actual.
+    El acceso al modo posicionamiento puede ser o bien desde el menú del modo entrenamiento o bién desde la pantalla principal, para poder acceder desde esta tienen que darse dos condiciones, el modo entrenemiento deberá de estar cumplimentado y configurado por defecto.
+    </string>
     <string name="lblAboutof">Acerca de...</string>
     <string name="tittle_training">Entrenamiento</string>
     <string name="summary_training">Modo por defecto entrenamiento o posicionamento</string>
+    <string name="default_number_refresh">5</string>
+    <string name="summary_refresh">Tiempo de refesco en segundos de la posición</string>
+    <string name="tittle_refresh">Refresco Posición</string>
 
     <!-- PlaneTrainingFragment -->
     <string name="btn_ini">Inicio</string>

@@ -4,10 +4,18 @@
     <string name="action_settings">Configuració</string>
     <string name="about">Instruccions</string>
     <string name="action_exit">Eixir</string>
-    <string name="textAboutof">Aquest programa té com a finalitat el posicionament en interiors via Wifi</string>
+    <string name="textAboutof">Aquest programa té com a finalitat el posicionament en interiors via Wifi.
+    El programa te dos modes, mode entrenamient i mode posicionamient.
+    Per entrar en mode posicionament deu estar completat la manera entrenament, dit manera estarà complet un cop se hagin guardats un mínim de dos punts de entrenament per pla.
+    Aquests punts els utilitzarà més tard el mode posicionament per calcular la posició actual.
+    El accés al mode posicionament pot ser o bé des del menú de entrenament o bé desde la pantalla principal , per poder accedir des de aquesta han de donar-se dues condicions, el mode entrenement haurà de estar emplenat i configurat per defecte.
+    </string>
     <string name="lblAboutof">Sobre de...</string>
     <string name="tittle_training">Entrenament</string>
     <string name="summary_training">Mode per defecte entrenament o posicionament</string>
+    <string name="default_number_refresh">5</string>
+    <string name="summary_refresh">Temps de refesc en segons de la posició</string>
+    <string name="tittle_refresh">Refresc Posició</string>
 
     <!-- PlaneTrainingFragment -->
     <string name="btn_ini">Inici</string>

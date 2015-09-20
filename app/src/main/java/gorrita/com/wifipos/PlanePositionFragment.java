@@ -1,18 +1,29 @@
 package gorrita.com.wifipos;
 
 import android.app.Activity;
-import android.net.Uri;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.Nullable;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
+
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import gorrita.com.wifipos.db.*;
 
@@ -31,6 +42,9 @@ public class PlanePositionFragment extends Fragment {
 
     private View view;
     private ImageView imageView;
+    private ImageView imagePosition;
+    private UpdatePosition updatePosition;
+    private WeakReference<UpdatePosition> asyncTaskWeakRef;
 
     /**
      * Use this factory method to create a new instance of
@@ -58,6 +72,7 @@ public class PlanePositionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         try{
             super.onCreate(savedInstanceState);
+            setHasOptionsMenu(true);
             if (getArguments() != null) {
                 mParam1 = getArguments().getString(ARG_PARAM1);
                 mParam2 = getArguments().getString(ARG_PARAM2);
@@ -77,12 +92,41 @@ public class PlanePositionFragment extends Fragment {
             view = inflater.inflate(R.layout.fragment_plane_position, container, false);
             loadImageResource();
             ((AplicationWifi)getActivity().getApplication()).setFirst(false);
+            imagePosition = (ImageView) view.findViewById(R.id.positionPlane);
+            //updatePosition = new UpdatePosition();
+            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            //CharSequence chrDefaultValueRefesh = getText(R.string.default_number_refresh);
+            //Float defaultValueRefesh = prefs.getFloat("refresh", Float.valueOf(chrDefaultValueRefesh.toString()));
+            //updatePosition.execute((defaultValueRefesh*1000));
+            setRetainInstance(true);
+            startNewAsyncTask();
             return view;
         }
         catch (Exception ex){
             Log.e(this.getClass().getName(), "onCreateView--->" + ex.getMessage());
             throw ex;
         }
+    }
+
+    private void startNewAsyncTask() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        CharSequence chrDefaultValueRefesh = getText(R.string.default_number_refresh);
+        Float valueRefesh = Float.valueOf(prefs.getString("refresh", chrDefaultValueRefesh.toString()));
+        if (!isAsyncTaskPendingOrRunning()) {
+            updatePosition = new UpdatePosition(this);
+            asyncTaskWeakRef = new WeakReference<UpdatePosition>(updatePosition);
+            asyncTaskWeakRef.get().execute((valueRefesh * 1000));
+        }
+        else{
+            asyncTaskWeakRef.get().exit = false;
+            asyncTaskWeakRef.get().execute((valueRefesh * 1000));
+        }
+    }
+
+    private boolean isAsyncTaskPendingOrRunning() {
+        return this.asyncTaskWeakRef != null &&
+                this.asyncTaskWeakRef.get() != null &&
+                !this.asyncTaskWeakRef.get().getStatus().equals(AsyncTask.Status.FINISHED);
     }
 
     private void loadImageResource(){
@@ -129,33 +173,121 @@ public class PlanePositionFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        super.onDetach();
-        mListener = null;
+        try {
+            super.onDetach();
+            mListener = null;
+            asyncTaskWeakRef.get().exit = true;
+            //updatePosition.exit = true;
+            asyncTaskWeakRef.get().cancel(true);
+            //updatePosition.cancel(true);
+        } catch (ClassCastException e) {
+            Log.e(this.getClass().getName(), "onDetach--->" + e.getMessage());;
+        }
     }
 
-    @Nullable
     @Override
-    public View getView() {
-        return view;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_plane_position, menu);
     }
 
-    public void setView(View view) {
-        this.view = view;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Intent intent;
+        switch (id) {
+
+            case R.id.accion_position_exit:
+                intent = new Intent(this.getActivity(), MainActivity.class);
+                startActivity(intent);
+                onDetach();
+                break;
+            case R.id.accion_position_training:
+                intent = new Intent(this.getActivity(), PlaneTrainingActivity.class);
+                startActivity(intent);
+                onDetach();
+                break;
+            default:
+                Toast.makeText(this.getActivity(), getString(android.R.string.unknownName), Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
-    public ImageView getImageView() {
-        return imageView;
+    public WeakReference<UpdatePosition> getAsyncTaskWeakRef() {
+        return asyncTaskWeakRef;
     }
 
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
+    public void setAsyncTaskWeakRef(WeakReference<UpdatePosition> asyncTaskWeakRef) {
+        this.asyncTaskWeakRef = asyncTaskWeakRef;
     }
 
-    public OnFragmentInteractionListener getmListener() {
-        return mListener;
+    private class UpdatePosition extends AsyncTask<Float, Float, Void> {
+
+        AplicationWifi aplicationWifi;
+        Map<PointTraining, List<PointTrainingWifi>> mapPointsTraining;
+        Float x;
+        Float y;
+        Boolean exit;
+
+        private WeakReference<PlanePositionFragment> fragmentWeakRef;
+
+        private UpdatePosition (PlanePositionFragment fragment) {
+            this.fragmentWeakRef = new WeakReference<PlanePositionFragment>(fragment);
+        }
+
+        @Override
+        protected  void onPreExecute(){
+            try{
+                mapPointsTraining = new HashMap<PointTraining, List<PointTrainingWifi>>();
+                exit = false;
+                aplicationWifi = (AplicationWifi) getActivity().getApplication();
+                List<PointTraining> lstPoinsTraining = aplicationWifi.getPointTrainings();
+                for(PointTraining pointTraining: lstPoinsTraining) {
+                    CharSequence where = " WHERE POINTTRAINING = " + pointTraining.getId();
+                    List<PointTrainingWifi> listPointTrainingWifi = WifiPosManager.listPointTrainingWifi(where);
+                    if (!listPointTrainingWifi.isEmpty())
+                        mapPointsTraining.put(pointTraining, listPointTrainingWifi);
+                }
+            } catch (ClassCastException e) {
+                Log.e(this.getClass().getName(), "onPreExecute--->" + e.getMessage());
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Float... params) {
+            while (!exit){
+                SystemClock.sleep((long)Math.round(params[0]));
+                publishProgress(x,y);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Float... params){
+            x = imagePosition.getX();
+            y = imagePosition.getY();
+            if (x+20 < 0)
+                imagePosition.setX(view.getWidth());
+            else if (x+20 > view.getWidth())
+                imagePosition.setX(0);
+            else
+                imagePosition.setX(x+20);
+            if (y + 20 < 0)
+                imagePosition.setY(view.getHeight());
+
+            if (y + 20 > view.getHeight())
+                imagePosition.setY(0);
+            else
+                imagePosition.setY(y + 20);
+        }
+
+        @Override
+        protected void onPostExecute(Void response) {
+            super.onPostExecute(response);
+            if (this.fragmentWeakRef.get() != null) {
+
+            }
+        }
+
     }
 
-    public void setmListener(OnFragmentInteractionListener mListener) {
-        this.mListener = mListener;
-    }
 }

@@ -5,5 +5,12 @@
         android:key="training"
         android:title="@string/tittle_training"
         android:summary="@string/summary_training"/>
+    <EditTextPreference
+        android:defaultValue="@string/default_number_refresh"
+        android:key="refresh"
+        android:summary="@string/summary_training"
+        android:title="@string/tittle_refresh"
+        android:inputType="number"/>
+
 
 </PreferenceScreen>

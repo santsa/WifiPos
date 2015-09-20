@@ -169,7 +169,7 @@ public class MainActivity extends Activity {
 
     private boolean configureTraining(){
         aplicationWifi = (AplicationWifi) getApplication();;
-        if(aplicationWifi.getPointTrainings()!=null && !aplicationWifi.getPointTrainings().isEmpty()) {
+        if(aplicationWifi.getPointTrainings()!=null && aplicationWifi.getPointTrainings().size() > 1) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             return prefs.getBoolean("training", true);
         }
