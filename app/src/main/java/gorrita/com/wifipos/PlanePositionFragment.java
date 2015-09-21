@@ -228,10 +228,10 @@ public class PlanePositionFragment extends Fragment {
         Float y;
         Boolean exit;
 
-        private WeakReference<PlanePositionFragment> fragmentWeakRef;
+        private WeakReference<Fragment> fragmentWeakRef;
 
         private UpdatePosition (PlanePositionFragment fragment) {
-            this.fragmentWeakRef = new WeakReference<PlanePositionFragment>(fragment);
+            this.fragmentWeakRef = new WeakReference<Fragment>(fragment);
         }
 
         @Override
@@ -247,6 +247,7 @@ public class PlanePositionFragment extends Fragment {
                     if (!listPointTrainingWifi.isEmpty())
                         mapPointsTraining.put(pointTraining, listPointTrainingWifi);
                 }
+                //SystemClock.sleep(5000);
             } catch (ClassCastException e) {
                 Log.e(this.getClass().getName(), "onPreExecute--->" + e.getMessage());
             }

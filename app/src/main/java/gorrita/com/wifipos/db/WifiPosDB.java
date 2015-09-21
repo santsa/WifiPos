@@ -11,7 +11,7 @@ public class WifiPosDB extends SQLiteOpenHelper {
 
 
     public WifiPosDB(Context context){
-        super(context, Constants.DATABASE_NAME.toString(), null, Constants.newVersion);
+        super(context, Constants.DATABASE_NAME.toString(), null, Constants.VERSION);
         //super(contexto, nombre, factory, version);
     }
 

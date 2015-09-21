@@ -4,8 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
 import android.net.wifi.ScanResult;
 import android.util.Log;
+import android.view.Display;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -247,8 +249,15 @@ public class WifiPosManager {
         values.put("ACTIVE", c.getActive());
     }
 
+    private static void loadContentValues(){
+        if (values!=null)
+            values.clear();
+        else
+            values = new ContentValues();
+    }
+
     private static void saveLoadPlane(Plane p){
-        values.clear();
+        loadContentValues();
         values.put("FILE", p.getFile().toString());
         values.put("NAME", p.getName().toString());
         valuesComun(p);
@@ -268,7 +277,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadPointTraining(PointTraining p){
-        values.clear();
+        loadContentValues();
         values.put("TRAINING", p.getTraining());
         values.put("X", p.getX());
         values.put("Y", p.getY());
@@ -281,9 +290,9 @@ public class WifiPosManager {
         return idPointTraining;
     }
 
-    private static PointTraining insertPointTraining(AplicationWifi aplicationWifi, Double x, Double y) {
+    public static PointTraining insertPointTraining(AplicationWifi aplicationWifi, Double x, Double y, Integer activo) {
         PointTraining pointTraining = new PointTraining(aplicationWifi.getTraining().getId(), x, y);
-        loadComun(pointTraining, null, null, System.currentTimeMillis(), 1);
+        loadComun(pointTraining, null, null, System.currentTimeMillis(), activo);
         int idPointTraining = insertPointTraining(pointTraining);
         pointTraining.setId(idPointTraining);
         return pointTraining;
@@ -297,7 +306,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadPointTrainingWifi(PointTrainingWifi p){
-        values.clear();
+        loadContentValues();
         values.put("POINTTRAINING", p.getPointtraining());
         values.put("WIFI", p.getWifi());
         values.put("level", p.getLevel());
@@ -327,7 +336,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadTraining(Training t){
-        values.clear();
+        loadContentValues();
         values.put("PLANE", t.getPlane());
         valuesComun(t);
     }
@@ -338,9 +347,9 @@ public class WifiPosManager {
         return idTraining;
     }
 
-    private static Training insertTraining(AplicationWifi aplicationWifi){
+    public static Training insertTraining(AplicationWifi aplicationWifi, int activo){
         Training training = new Training(aplicationWifi.getPlane().getId());
-        loadComun(training, null, null, System.currentTimeMillis(), 1);
+        loadComun(training, null, null, System.currentTimeMillis(), activo);
         int idTraining = insertTraining(training);
         training.setId(idTraining);
         return training;
@@ -354,7 +363,7 @@ public class WifiPosManager {
     }
 
     private static void saveLoadWifi(Wifi w){
-        values.clear();
+        loadContentValues();
         values.put("BSSID", w.getBSSID());
         values.put("capabilities", w.getCapabilities());
         values.put("frequency", w.getFrequency());
@@ -390,17 +399,47 @@ public class WifiPosManager {
         cm.setActive(active);
     }
 
+
+    public static void initTrainingPointTraining(AplicationWifi aplicationWifi, boolean newTraining, Point size){
+        try {
+            dbr = wifiPosDB.getWritableDatabase();
+            dbr.beginTransaction();
+        if(newTraining){
+            Training training = WifiPosManager.insertTraining(aplicationWifi, 0);
+            aplicationWifi.setTraining(training);
+        }
+            List<PointTraining> listPointTraining = new ArrayList<PointTraining>();
+            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, 0.0, 0.0, 0));
+            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, (double) size.x-60, 0.0, 0));
+            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, 0.0, (double) size.y-100, 0));
+            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, (double)size.x-60, (double)size.y-100, 0));
+            aplicationWifi.setPointTrainings(listPointTraining);
+        } catch (Exception e) {
+            aplicationWifi.setTraining(null);
+            aplicationWifi.getPointTrainings().clear();
+            Log.e(TAG.toString(), "initTrainingPointTraining--->" + e.getMessage());
+            throw e;
+        } finally {
+            values = null;
+            try {
+                dbr.endTransaction();
+            }catch(Exception ex){
+                Log.e(TAG.toString(), "initTrainingPointTraining.finally.db.endTransaction()--->" + ex.getMessage());
+            }
+            close(dbw, null);
+            close(dbr, null);
+        }
+    }
+
     public static void savePoint(List<ScanResult> lstScanResult, AplicationWifi aplicationWifi, Double x, Double y) {
         try {
 
             dbr = wifiPosDB.getWritableDatabase();
             dbr.beginTransaction();
-            if (values == null)
-                values = new ContentValues();
             //entrenament
             //comprobar si existeix entrenament amb eixe pla si no existeix crearlo
             if (aplicationWifi.getTraining() == null) {
-                Training training = insertTraining(aplicationWifi);
+                Training training = insertTraining(aplicationWifi, 1);
                 aplicationWifi.setTraining(training);
             }
             //punt d'entrenament
@@ -410,7 +449,7 @@ public class WifiPosManager {
                 aplicationWifi.setPointTrainings(new ArrayList<PointTraining>());
             PointTraining pointTraining = null;
             if (aplicationWifi.getPointTrainings().isEmpty()) {
-                pointTraining = insertPointTraining(aplicationWifi, x, y);
+                pointTraining = insertPointTraining(aplicationWifi, x, y, 1);
                 aplicationWifi.getPointTrainings().add(pointTraining);
             } else {
                 for (PointTraining p : aplicationWifi.getPointTrainings()) {
@@ -420,7 +459,7 @@ public class WifiPosManager {
                     }
                 }
                 if (pointTraining == null)
-                    pointTraining = insertPointTraining(aplicationWifi, x, y);
+                    pointTraining = insertPointTraining(aplicationWifi, x, y, 1);
                     aplicationWifi.getPointTrainings().add(pointTraining);
             }
             //wifi

@@ -41,19 +41,4 @@ public class PointTraining extends Comun{
         this.y = y;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PointTraining that = (PointTraining) o;
-
-        return Training.equals(that.Training);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return Training.hashCode();
-    }
 }

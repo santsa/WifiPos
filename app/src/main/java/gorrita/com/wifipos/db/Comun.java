@@ -51,4 +51,19 @@ public abstract class Comun {
         this.active = active == null ? 1:active;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comun)) return false;
+
+        Comun comun = (Comun) o;
+
+        return getId().equals(comun.getId());
+
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
 }

@@ -51,16 +51,4 @@ public class Wifi extends Comun{
         this.frequency = frequency;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Wifi wifi = (Wifi) o;
-        return BSSID.equals(wifi.BSSID);
-    }
-
-    @Override
-    public int hashCode() {
-        return BSSID.hashCode();
-    }
 }

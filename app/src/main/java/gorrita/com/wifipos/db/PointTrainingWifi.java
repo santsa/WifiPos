@@ -51,4 +51,5 @@ public class PointTrainingWifi extends Comun{
         this.timestamp = timestamp;
     }
 
+
 }

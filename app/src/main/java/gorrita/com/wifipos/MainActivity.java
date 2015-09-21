@@ -8,16 +8,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import gorrita.com.wifipos.db.Plane;
@@ -145,31 +148,53 @@ public class MainActivity extends Activity {
     private boolean initPlane(){
         aplicationWifi = (AplicationWifi) getApplication();
         if(aplicationWifi.getPlane() == null) {
-            List<Plane> lstPlane= WifiPosManager.listPlanes(" where FILE ='" + file + "' AND ACTIVE = 1");
-            if(!lstPlane.isEmpty()) {
-                aplicationWifi.setPlane(lstPlane.get(0));
-                List<Training> lstTraining = WifiPosManager.listTraining(
-                        " WHERE PLANE = " + aplicationWifi.getPlane().getId()  + " AND ACTIVE = 1");
-                if(!lstTraining.isEmpty()) {
-                    aplicationWifi.setTraining(lstTraining.get(0));
-                    if(aplicationWifi.getPointTrainings()==null || aplicationWifi.getPointTrainings().isEmpty()) {
-                        List<PointTraining> lstPointTrainings = WifiPosManager.listPointTraining(
-                                " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
-                        aplicationWifi.setPointTrainings(lstPointTrainings);
-                    }
+            List<Plane> lstPlane = WifiPosManager.listPlanes(" where FILE ='" + file + "' AND ACTIVE = 1");
+            if (lstPlane == null && lstPlane.isEmpty())
+                return true;
+            aplicationWifi.setPlane(lstPlane.get(0));
+        }
+        if(aplicationWifi.getPlane() != null) {
+            List<Training> lstTraining = WifiPosManager.listTraining(
+                    " WHERE PLANE = " + aplicationWifi.getPlane().getId()  + " AND ACTIVE = 1");
+            if(!lstTraining.isEmpty()) {
+                aplicationWifi.setTraining(lstTraining.get(0));
+                if(aplicationWifi.getPointTrainings()==null || aplicationWifi.getPointTrainings().isEmpty()) {
+                    List<PointTraining> lstPointTrainings = WifiPosManager.listPointTraining(
+                            " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
+                    aplicationWifi.setPointTrainings(lstPointTrainings);
+                }
+                else{
+                    insertPointTraining(false);
                 }
             }
             else{
-                Toast.makeText(this, getString(R.string.plane_not_exist), Toast.LENGTH_SHORT).show();
-                return false;
+                insertPointTraining(true);
             }
         }
+        else{
+            Toast.makeText(this, getString(R.string.plane_not_exist), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        //}
         return true;
     }
 
+    private void insertPointTraining(boolean newTraining){
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        WifiPosManager.initTrainingPointTraining(aplicationWifi, newTraining, size);
+    }
+
     private boolean configureTraining(){
-        aplicationWifi = (AplicationWifi) getApplication();;
-        if(aplicationWifi.getPointTrainings()!=null && aplicationWifi.getPointTrainings().size() > 1) {
+        aplicationWifi = (AplicationWifi) getApplication();
+        if (aplicationWifi.getTraining().getActive() == 0)
+            return true;
+        if(aplicationWifi.getPointTrainings()!=null && aplicationWifi.getPointTrainings().size() >= 4) {
+            for (PointTraining pointTraining:aplicationWifi.getPointTrainings()){
+                if(pointTraining.getActive() == 0)
+                    return true;
+            }
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             return prefs.getBoolean("training", true);
         }
