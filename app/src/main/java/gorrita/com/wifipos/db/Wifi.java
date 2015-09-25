@@ -3,7 +3,7 @@ package gorrita.com.wifipos.db;
 /**
  * Created by salva on 21/08/15.
  */
-public class Wifi extends Comun{
+public class Wifi extends ComunDB {
 
     private String SSID;
     private String BSSID;

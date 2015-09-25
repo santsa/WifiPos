@@ -46,5 +46,6 @@
     <string name="point_y">Coord. Y</string>
     <string name="empty_wifi">No hay Wi-Fi</string>
     <string name="ok_save_point">El punto ha sido guardado</string>
+    <string name="point_far">Debe seleccionar un punto de entrenamiento</string>
 
 </resources>

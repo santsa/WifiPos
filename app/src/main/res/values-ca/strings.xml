@@ -46,5 +46,6 @@
     <string name="point_y">Coord. Y</string>
     <string name="empty_wifi">No hi ha Wi-Fi</string>
     <string name="ok_save_point">El punt ha estat guardat</string>
+    <string name="point_far">Ha de seleccionar un punt de entrenament</string>
 
 </resources>

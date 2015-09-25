@@ -21,31 +21,12 @@
                     android:text="@string/point_x"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:id="@+id/edit_x" />
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/table_wifi_Row2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dip" >
                 <TextView
                     android:id="@+id/txt_y"
                     android:text="@string/point_y"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:ems="10"
-                    android:id="@+id/edit_y" />
             </TableRow>
-
         </TableLayout>
 
 

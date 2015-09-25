@@ -1,11 +1,15 @@
 package gorrita.com.wifipos;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -18,14 +22,16 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.view.View;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gorrita.com.wifipos.db.*;
+import gorrita.com.wifipos.db.PointTraining;
+import gorrita.com.wifipos.db.PointTrainingWifi;
+import gorrita.com.wifipos.db.Wifi;
+import gorrita.com.wifipos.db.WifiPosManager;
 
 
 public class PlanePositionFragment extends Fragment {
@@ -65,7 +71,7 @@ public class PlanePositionFragment extends Fragment {
     }
 
     public PlanePositionFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
@@ -93,11 +99,6 @@ public class PlanePositionFragment extends Fragment {
             loadImageResource();
             ((AplicationWifi)getActivity().getApplication()).setFirst(false);
             imagePosition = (ImageView) view.findViewById(R.id.positionPlane);
-            //updatePosition = new UpdatePosition();
-            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            //CharSequence chrDefaultValueRefesh = getText(R.string.default_number_refresh);
-            //Float defaultValueRefesh = prefs.getFloat("refresh", Float.valueOf(chrDefaultValueRefesh.toString()));
-            //updatePosition.execute((defaultValueRefesh*1000));
             setRetainInstance(true);
             startNewAsyncTask();
             return view;
@@ -177,9 +178,8 @@ public class PlanePositionFragment extends Fragment {
             super.onDetach();
             mListener = null;
             asyncTaskWeakRef.get().exit = true;
-            //updatePosition.exit = true;
             asyncTaskWeakRef.get().cancel(true);
-            //updatePosition.cancel(true);
+            asyncTaskWeakRef.get().listWifiScan.clear();
         } catch (ClassCastException e) {
             Log.e(this.getClass().getName(), "onDetach--->" + e.getMessage());;
         }
@@ -223,10 +223,12 @@ public class PlanePositionFragment extends Fragment {
     private class UpdatePosition extends AsyncTask<Float, Float, Void> {
 
         AplicationWifi aplicationWifi;
-        Map<PointTraining, List<PointTrainingWifi>> mapPointsTraining;
+        Map<PointTraining, Map<Wifi,PointTrainingWifi>> mapPointsTraining;
         Float x;
         Float y;
         Boolean exit;
+        WifiManager wifi;
+        List<ScanResult> listWifiScan;
 
         private WeakReference<Fragment> fragmentWeakRef;
 
@@ -237,16 +239,25 @@ public class PlanePositionFragment extends Fragment {
         @Override
         protected  void onPreExecute(){
             try{
-                mapPointsTraining = new HashMap<PointTraining, List<PointTrainingWifi>>();
+                mapPointsTraining = new HashMap<PointTraining, Map<Wifi,PointTrainingWifi>>();
                 exit = false;
                 aplicationWifi = (AplicationWifi) getActivity().getApplication();
                 List<PointTraining> lstPoinsTraining = aplicationWifi.getPointTrainings();
                 for(PointTraining pointTraining: lstPoinsTraining) {
-                    CharSequence where = " WHERE POINTTRAINING = " + pointTraining.getId();
+                    CharSequence where = " WHERE POINTTRAINING = " + pointTraining.getId() + " AND ACTIVE = 1";
                     List<PointTrainingWifi> listPointTrainingWifi = WifiPosManager.listPointTrainingWifi(where);
-                    if (!listPointTrainingWifi.isEmpty())
-                        mapPointsTraining.put(pointTraining, listPointTrainingWifi);
+                    Map<Wifi,PointTrainingWifi> mapPointsTrainingWifi = new HashMap<Wifi,PointTrainingWifi>();
+                    for (PointTrainingWifi p:  listPointTrainingWifi){
+                        where = " WHERE ID = " + p.getWifi() + " AND ACTIVE = 1";
+                        List<Wifi> listWifi = WifiPosManager.listWifi(where);
+                        if(!listWifi.isEmpty()){
+                            mapPointsTrainingWifi.put(listWifi.get(0),p);
+                        }
+                    }
+                    if(!mapPointsTrainingWifi.isEmpty())
+                        mapPointsTraining.put(pointTraining, mapPointsTrainingWifi);
                 }
+                wifi = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
                 //SystemClock.sleep(5000);
             } catch (ClassCastException e) {
                 Log.e(this.getClass().getName(), "onPreExecute--->" + e.getMessage());
@@ -264,21 +275,33 @@ public class PlanePositionFragment extends Fragment {
 
         @Override
         protected void onProgressUpdate(Float... params){
+            wifiScan();
             x = imagePosition.getX();
             y = imagePosition.getY();
-            if (x+20 < 0)
-                imagePosition.setX(view.getWidth());
-            else if (x+20 > view.getWidth())
-                imagePosition.setX(0);
+            Point size = aplicationWifi.getSize();
+            if (x+20 < 0-10)
+                imagePosition.setX(0-10);
+            else if (x+20 > size.x-60)
+                imagePosition.setX(size.x-60);
             else
                 imagePosition.setX(x+20);
-            if (y + 20 < 0)
-                imagePosition.setY(view.getHeight());
 
-            if (y + 20 > view.getHeight())
-                imagePosition.setY(0);
+            if (y + 20 < 0-10)
+                imagePosition.setY(0 -10);
+            if (y + 20 > size.y-100)
+                imagePosition.setY(size.y-100);
             else
                 imagePosition.setY(y + 20);
+        }
+
+        private void wifiScan(){
+            try {
+                wifi.startScan();
+                listWifiScan = wifi.getScanResults();
+            }catch (Exception ex){
+                listWifiScan.clear();
+                Log.e(this.getClass().getName(), "listWifiScan--->" + ex.getMessage());
+            }
         }
 
         @Override

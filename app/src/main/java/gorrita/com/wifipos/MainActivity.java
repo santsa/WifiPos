@@ -7,20 +7,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import gorrita.com.wifipos.db.Plane;
@@ -107,7 +102,7 @@ public class MainActivity extends Activity {
                                                 wifiManager.setWifiEnabled(true);
                                             if (initPlane()) {
                                                 Intent intent;
-                                                if (configureTraining()) {
+                                                if (Comun.configureTraining(MainActivity.this, true)) {
                                                     intent = new Intent(MainActivity.this, PlaneTrainingActivity.class);
                                                 } else {
                                                     intent = new Intent(MainActivity.this, PlanePositionActivity.class);
@@ -147,35 +142,33 @@ public class MainActivity extends Activity {
 
     private boolean initPlane(){
         aplicationWifi = (AplicationWifi) getApplication();
-        if(aplicationWifi.getPlane() == null) {
-            List<Plane> lstPlane = WifiPosManager.listPlanes(" where FILE ='" + file + "' AND ACTIVE = 1");
-            if (lstPlane == null && lstPlane.isEmpty())
-                return true;
-            aplicationWifi.setPlane(lstPlane.get(0));
-        }
-        if(aplicationWifi.getPlane() != null) {
-            List<Training> lstTraining = WifiPosManager.listTraining(
-                    " WHERE PLANE = " + aplicationWifi.getPlane().getId()  + " AND ACTIVE = 1");
-            if(!lstTraining.isEmpty()) {
-                aplicationWifi.setTraining(lstTraining.get(0));
-                if(aplicationWifi.getPointTrainings()==null || aplicationWifi.getPointTrainings().isEmpty()) {
-                    List<PointTraining> lstPointTrainings = WifiPosManager.listPointTraining(
-                            " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
-                    aplicationWifi.setPointTrainings(lstPointTrainings);
-                }
-                else{
-                    insertPointTraining(false);
-                }
+        if (aplicationWifi.isFirst()) {
+            if (aplicationWifi.getPlane() == null) {
+                List<Plane> lstPlane = WifiPosManager.listPlanes(" where FILE ='" + file + "'");
+                if (lstPlane == null && lstPlane.isEmpty())
+                    return true;
+                aplicationWifi.setPlane(lstPlane.get(0));
             }
-            else{
-                insertPointTraining(true);
+            if (aplicationWifi.getPlane() != null) {
+                List<Training> lstTraining = WifiPosManager.listTraining(
+                        " WHERE PLANE = " + aplicationWifi.getPlane().getId());
+                if (!lstTraining.isEmpty()) {
+                    aplicationWifi.setTraining(lstTraining.get(0));
+                    if (aplicationWifi.getPointTrainings() == null || aplicationWifi.getPointTrainings().isEmpty()) {
+                        List<PointTraining> lstPointTrainings = WifiPosManager.listPointTraining(
+                                " WHERE TRAINING = " + aplicationWifi.getTraining().getId());
+                        aplicationWifi.setPointTrainings(lstPointTrainings);
+                    } else {
+                        insertPointTraining(false);
+                    }
+                } else {
+                    insertPointTraining(true);
+                }
+            } else {
+                Toast.makeText(this, getString(R.string.plane_not_exist), Toast.LENGTH_SHORT).show();
+                return false;
             }
         }
-        else{
-            Toast.makeText(this, getString(R.string.plane_not_exist), Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        //}
         return true;
     }
 
@@ -183,23 +176,11 @@ public class MainActivity extends Activity {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
+        aplicationWifi.setSize(size);
         WifiPosManager.initTrainingPointTraining(aplicationWifi, newTraining, size);
     }
 
-    private boolean configureTraining(){
-        aplicationWifi = (AplicationWifi) getApplication();
-        if (aplicationWifi.getTraining().getActive() == 0)
-            return true;
-        if(aplicationWifi.getPointTrainings()!=null && aplicationWifi.getPointTrainings().size() >= 4) {
-            for (PointTraining pointTraining:aplicationWifi.getPointTrainings()){
-                if(pointTraining.getActive() == 0)
-                    return true;
-            }
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            return prefs.getBoolean("training", true);
-        }
-        return true;
-    }
+
 
     @Override
     protected void onPause() {
@@ -263,25 +244,4 @@ public class MainActivity extends Activity {
             }
         }};
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_plane_training, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }

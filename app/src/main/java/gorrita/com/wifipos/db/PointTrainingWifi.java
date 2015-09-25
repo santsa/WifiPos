@@ -3,7 +3,7 @@ package gorrita.com.wifipos.db;
 /**
  * Created by salva on 21/08/15.
  */
-public class PointTrainingWifi extends Comun{
+public class PointTrainingWifi extends ComunDB {
 
     public PointTrainingWifi() {}
 

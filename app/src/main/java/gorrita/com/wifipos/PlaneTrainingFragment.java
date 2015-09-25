@@ -2,10 +2,7 @@ package gorrita.com.wifipos;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.util.List;
-
-import gorrita.com.wifipos.db.Plane;
 import gorrita.com.wifipos.db.PointTraining;
-import gorrita.com.wifipos.db.Training;
-import gorrita.com.wifipos.db.WifiPosManager;
 
 
 public class PlaneTrainingFragment extends Fragment implements View.OnTouchListener/*, View.OnLongClickListener*/ {
@@ -29,13 +21,9 @@ public class PlaneTrainingFragment extends Fragment implements View.OnTouchListe
     private static final CharSequence MODETRAINING = "modeTraining";
 
     private OnFragmentInteractionListener mListener;
-    private String mParam1;
-    private String mParam2;
 
     private View view;
     private ImageView imageView;
-    private CharSequence file = "0x7f02007f";
-    private Boolean training = true;
 
 
     public static PlaneTrainingFragment newInstance(Bundle arguments) {
@@ -59,12 +47,14 @@ public class PlaneTrainingFragment extends Fragment implements View.OnTouchListe
         try{
             super.onCreate(savedInstanceState);
             AplicationWifi aplicationWifi = (AplicationWifi)getActivity().getApplication();
+
             if (aplicationWifi.getHeightPoint() == 0) {
                 DisplayMetrics displaymetrics = new DisplayMetrics();
                 getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
                 aplicationWifi.setHeightPoint((int) displaymetrics.ydpi);
                 aplicationWifi.setWidthPoint((int) displaymetrics.xdpi);
             }
+
         }
         catch (Exception ex){
             Log.e(this.getClass().getName(), "onCreate--->" + ex.getMessage());
@@ -80,7 +70,6 @@ public class PlaneTrainingFragment extends Fragment implements View.OnTouchListe
         try {
             // Inflate the layout for this fragment
             view = inflater.inflate(R.layout.fragment_plane_training, container, false);
-            //configureTraining();
             loadImageResource();
             //imageView.setOnLongClickListener(this);
             loadPointTrainings();
@@ -93,21 +82,6 @@ public class PlaneTrainingFragment extends Fragment implements View.OnTouchListe
         }
     }
 
-    private void configureTraining(){
-        AplicationWifi aplicationWifi = (AplicationWifi)getActivity().getApplication();
-        training = true;
-        if(aplicationWifi.getPointTrainings()!=null && !aplicationWifi.getPointTrainings().isEmpty()) {
-            if (aplicationWifi.isFirst()) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                training = prefs.getBoolean("training", true);
-                return;
-            }
-            if (getArguments() != null) {
-                training = getArguments().getBoolean(MODETRAINING.toString());
-            }
-        }
-    }
-
     private void loadPointTrainings(){
         AplicationWifi aplicationWifi = (AplicationWifi)getActivity().getApplication();
         if (aplicationWifi.getPointTrainings()!=null){
@@ -116,31 +90,11 @@ public class PlaneTrainingFragment extends Fragment implements View.OnTouchListe
             }
         }
     }
-/*
-    public void reloadPointTrainings(int numPointTraining){
-        try{
-            AplicationWifi aplicationWifi = (AplicationWifi)getActivity().getApplication();
-            if (aplicationWifi.getPointTrainings().isEmpty()) {
-                List<PointTraining> lstPointTrainings = WifiPosManager.listPointTraining(
-                        " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
-                aplicationWifi.setPointTrainings(lstPointTrainings);
-            }
-            else if (aplicationWifi.getPointTrainings().size() > numPointTraining){
-                PointTraining pointTraining = aplicationWifi.getPointTrainings().get(numPointTraining);
-                addImagePosition(pointTraining);
-                view = this.getView();
-            }
-        }catch (Exception ex){
-            Log.e(this.getClass().getName(), "reloadPointTrainings--->" + ex.getMessage());
-            throw ex;
-        }
-    }
-*/
+
     private void addImagePosition(PointTraining pointTraining){
         try {
             final FrameLayout fl = (FrameLayout) view.findViewById(R.id.fragment_training);
             ImageView imageViewPoint = new ImageView(getActivity());
-            //ImageView imageViewPoint = (ImageView) view.findViewById(R.id.pointtraining);
             imageViewPoint.setImageResource(android.R.drawable.star_on);
             AplicationWifi aplicationWifi = (AplicationWifi) getActivity().getApplication();
             FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams
@@ -215,29 +169,4 @@ public class PlaneTrainingFragment extends Fragment implements View.OnTouchListe
         return true;
     }
 
-    public OnFragmentInteractionListener getmListener() {
-        return mListener;
-    }
-
-    public void setmListener(OnFragmentInteractionListener mListener) {
-        this.mListener = mListener;
-    }
-
-    public ImageView getImageView() {
-        return imageView;
-    }
-
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
-    }
-
-    @Nullable
-    @Override
-    public View getView() {
-        return view;
-    }
-
-    public void setView(View view) {
-        this.view = view;
-    }
 }

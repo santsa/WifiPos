@@ -3,14 +3,14 @@ package gorrita.com.wifipos;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.Toast;
+
+import gorrita.com.wifipos.db.PointTraining;
 
 
 public class PlaneTrainingActivity extends Activity implements OnFragmentInteractionListener{
@@ -22,15 +22,33 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
     @Override
     public void openDialog(MotionEvent event) {
         try {
-            wifiFragment = WifiFragment.newInstance(event, "");
-            wifiFragment.show(getFragmentManager(), "dialog");
+
+            PointTraining pointTraining = selectedPointTraining(event);
+            if(pointTraining != null) {
+                wifiFragment = WifiFragment.newInstance(event, pointTraining);
+                wifiFragment.show(getFragmentManager(), "dialog");
+            }
+            else{
+                Toast.makeText(this, getString(R.string.point_far), Toast.LENGTH_LONG).show();
+            }
         }catch(Exception e){
             Log.e(this.getClass().getName(), "openDialog--->" + e.getMessage());
         }
     }
 
+    private PointTraining selectedPointTraining(MotionEvent event){
+        AplicationWifi aplicationWifi = (AplicationWifi) getApplication();
+        for (PointTraining pointTraining: aplicationWifi.getPointTrainings()){
+            if ((Math.abs(pointTraining.getX() - event.getX()) < 150)
+                    && (Math.abs(pointTraining.getY() - event.getY()) < 150)) {
+                return pointTraining;
+            }
+        }
+        return null;
+    }
+
     @Override
-    public void closeDialog(int numPointTraining) {
+    public void closeDialog() {
         newInstanceFragmentPlane();
         //planeFragment.reloadPointTrainings(numPointTraining);
     }
@@ -61,7 +79,7 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         AplicationWifi aplicationWifi = (AplicationWifi) getApplication();
-        if(aplicationWifi.getPointTrainings()!=null && aplicationWifi.getPointTrainings().size() > 1) {
+        if(Comun.configureTraining(this, false)) {
             menu.add(Menu.NONE, Constants.ACTION_POSITION, Menu.NONE, R.string.tittle_position)
                     .setIcon(android.R.drawable.ic_menu_directions);
         }

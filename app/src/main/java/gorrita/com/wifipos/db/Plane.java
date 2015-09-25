@@ -1,7 +1,7 @@
 package gorrita.com.wifipos.db;
 
 
-public class Plane extends Comun{
+public class Plane extends ComunDB {
 
     public Plane() {}
 

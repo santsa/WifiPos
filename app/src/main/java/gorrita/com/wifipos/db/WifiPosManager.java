@@ -1,5 +1,6 @@
 package gorrita.com.wifipos.db;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -7,12 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.net.wifi.ScanResult;
 import android.util.Log;
-import android.view.Display;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import gorrita.com.wifipos.AplicationWifi;
+import gorrita.com.wifipos.Comun;
 
 /**
  * Created by salva on 23/08/15.
@@ -233,7 +234,7 @@ public class WifiPosManager {
         return wifi;
     }
 
-    private static void loadCursorComun(Cursor c, Comun cm){
+    private static void loadCursorComun(Cursor c, ComunDB cm){
         cm.setId(c.getInt(0));
         cm.setDescription(c.getString(c.getColumnIndex(DESCRIPTION.toString())));
         cm.setDataCreated(c.getLong(c.getColumnIndex(DATACREATED.toString())));
@@ -241,7 +242,7 @@ public class WifiPosManager {
         cm.setActive(c.getInt(c.getColumnIndex(ACTIVE.toString())));
     }
 
-     private static void valuesComun(Comun c){
+     private static void valuesComun(ComunDB c){
         String desc = c.getDescription()==null?null:c.getDescription().toString();
         values.put("DESCRIPTION", desc);
         values.put("DATACREATED", c.getDataCreated());
@@ -300,7 +301,6 @@ public class WifiPosManager {
 
     private static int updatePointTraining(PointTraining p, String whereClause, String[] whereArgs){
         saveLoadPointTraining(p);
-        //int filasAfectadas = (int) db.update("PLANES", values, "id = ?", new String[]{String.valueOf(p.getId())});
         int filasAfectadas = (int) dbr.update("POINTTRAININGS", values, whereClause, whereArgs);
         return filasAfectadas;
     }
@@ -391,7 +391,7 @@ public class WifiPosManager {
         return filasAfectadas;
     }
 
-    private static void loadComun(Comun cm, Integer id, CharSequence description, Long datacreated, Integer active){
+    private static void loadComun(ComunDB cm, Integer id, CharSequence description, Long datacreated, Integer active){
         cm.setId(id);
         cm.setDescription(description);
         cm.setDataCreated(datacreated);
@@ -409,9 +409,9 @@ public class WifiPosManager {
             aplicationWifi.setTraining(training);
         }
             List<PointTraining> listPointTraining = new ArrayList<PointTraining>();
-            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, 0.0, 0.0, 0));
-            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, (double) size.x-60, 0.0, 0));
-            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, 0.0, (double) size.y-100, 0));
+            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, 0.0 -10, 0.0-10, 0));
+            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, (double) size.x-60, 0.0-10, 0));
+            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, 0.0 -10, (double) size.y-100, 0));
             listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, (double)size.x-60, (double)size.y-100, 0));
             aplicationWifi.setPointTrainings(listPointTraining);
         } catch (Exception e) {
@@ -431,39 +431,17 @@ public class WifiPosManager {
         }
     }
 
-    public static void savePoint(List<ScanResult> lstScanResult, AplicationWifi aplicationWifi, Double x, Double y) {
+    public static void savePoint(Activity act,List<ScanResult> lstScanResult, AplicationWifi aplicationWifi, PointTraining pointTraining) {
         try {
 
             dbr = wifiPosDB.getWritableDatabase();
             dbr.beginTransaction();
-            //entrenament
-            //comprobar si existeix entrenament amb eixe pla si no existeix crearlo
-            if (aplicationWifi.getTraining() == null) {
-                Training training = insertTraining(aplicationWifi, 1);
-                aplicationWifi.setTraining(training);
+            int filasAfectadas = 0;
+            if(pointTraining.getActive() == 0) {
+                pointTraining.setActive(1);
+                filasAfectadas = updatePointTraining(pointTraining, "id = ?", new String[]{String.valueOf(pointTraining.getId())});
             }
-            //punt d'entrenament
-            //comprobar si existeix un que te les coordenades iguals o que els separen x e y < 20
-            //List<PointTraining> lstPointTraining = _listPointTraining(" WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " AND ACTIVE = 1");
-            if (aplicationWifi.getPointTrainings() == null)
-                aplicationWifi.setPointTrainings(new ArrayList<PointTraining>());
-            PointTraining pointTraining = null;
-            if (aplicationWifi.getPointTrainings().isEmpty()) {
-                pointTraining = insertPointTraining(aplicationWifi, x, y, 1);
-                aplicationWifi.getPointTrainings().add(pointTraining);
-            } else {
-                for (PointTraining p : aplicationWifi.getPointTrainings()) {
-                    if ((Math.abs(p.getX() - x) < 20) && (Math.abs(p.getY() - y) < 20)) {
-                        pointTraining = p;
-                        break;
-                    }
-                }
-                if (pointTraining == null)
-                    pointTraining = insertPointTraining(aplicationWifi, x, y, 1);
-                    aplicationWifi.getPointTrainings().add(pointTraining);
-            }
-            //wifi
-            // comprobar si existeix un wifi amb la mateixa MAC
+            //wifi comprobar si existeix un wifi amb la mateixa MAC
             List<Wifi> lstWifiSaveorUpdate = new ArrayList<Wifi>();
             List<ScanResult> lstScanResultSaveorUpdate = new ArrayList<ScanResult>();
             for (ScanResult scanResult : lstScanResult) {
@@ -474,7 +452,7 @@ public class WifiPosManager {
                 }
                 else{
                     wifi = lstWifi.get(0);
-                    int filasAfectadas = updateWifi(wifi, "id = ?", new String[]{String.valueOf(wifi.getId())});
+                    filasAfectadas = updateWifi(wifi, "id = ?", new String[]{String.valueOf(wifi.getId())});
                     Log.i("updateWifi", "BSSID:" + wifi.getBSSID() + " filas:" + filasAfectadas);
                 }
                 lstWifiSaveorUpdate.add(wifi);
@@ -490,7 +468,7 @@ public class WifiPosManager {
                     PointTrainingWifi p;
                     for (PointTrainingWifi pointTrainingWifi : lstPontsTrainingWifi) {
                         if (pointTrainingWifi.getWifi() == wifi.getId()) {
-                            int filasAfectadas = updatePointTrainingWifi(pointTrainingWifi, "id = ?", new String[]{String.valueOf(pointTrainingWifi.getId())});
+                            filasAfectadas = updatePointTrainingWifi(pointTrainingWifi, "id = ?", new String[]{String.valueOf(pointTrainingWifi.getId())});
                             p = pointTrainingWifi;
                             update = true;
                             break;
@@ -504,9 +482,15 @@ public class WifiPosManager {
                     insertPointTrainingWifi(pointTraining, wifi, scanResult.level, scanResult.timestamp);
                 i++;
             }
+            int index = aplicationWifi.getPointTrainings().lastIndexOf(pointTraining);
+            aplicationWifi.getPointTrainings().get(index).setActive(1);
+            if(!Comun.configureTraining(act, false)){
+                filasAfectadas = updateTraining(aplicationWifi.getTraining(),"id = ?", new String[]{String.valueOf(aplicationWifi.getTraining().getId())});
+            }
             dbr.setTransactionSuccessful();
 
         } catch (Exception e) {
+            aplicationWifi.getTraining().setActive(0);
             aplicationWifi.getPointTrainings().clear();
             Log.e(TAG.toString(), "savePoint--->" + e.getMessage());
             throw e;

@@ -19,32 +19,26 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import gorrita.com.wifipos.db.PointTraining;
-import gorrita.com.wifipos.db.PointTrainingWifi;
-import gorrita.com.wifipos.db.Wifi;
 import gorrita.com.wifipos.db.WifiPosManager;
 
 
 public class WifiFragment extends DialogFragment implements DialogInterface.OnDismissListener{
 
-    //private OnFragmentInteractionListener mListener;
-    private EditText mEditText;
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_EVENT = "event";
-    private static final String ARG_PARAM2 = "param2";
+
+    private static final CharSequence ARG_EVENT = "event";
+    private static final CharSequence ARG_POINTTRAINING = "pointTraining";
 
     private MotionEvent event;
-    private String mParam2;
+    private PointTraining pointTraining;
 
-    private EditText editWifiX;
-    private EditText editWifiY;
     private ListView listViewWifi;
     private List<ScanResult> listWifiScan;
     private List<String> listWifi;
@@ -52,41 +46,38 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
     private Button btnSaveWifi;
 
     private OnFragmentInteractionListener mListener;
-    private int numPointTraining;
 
-    /**
-     * Use this factory method to create as new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param event Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment WifiFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static WifiFragment newInstance(MotionEvent event, String param2) {
+    public static WifiFragment newInstance(MotionEvent event, PointTraining pointTraining) throws IOException {
         try{
             WifiFragment fragment = new WifiFragment();
             Bundle args = new Bundle();
-
-            args.putParcelable(ARG_EVENT, event);
-            args.putString(ARG_PARAM2, param2);
+            args.putParcelable(ARG_EVENT.toString(), event);
+            byte[] bytePointTraining = Comun.convertToBytes(pointTraining);
+            args.putByteArray(ARG_POINTTRAINING.toString(), bytePointTraining);
             fragment.setArguments(args);
             return fragment;
-        } catch (ClassCastException e) {
+        } catch (Exception e) {
             Log.e("WifiFragment", "newInstance--->" + e.getMessage());
             throw e;
         }
     }
+
+
 
     public WifiFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            event = getArguments().getParcelable(ARG_EVENT);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        try {
+            super.onCreate(savedInstanceState);
+            if (getArguments() != null) {
+                event = getArguments().getParcelable(ARG_EVENT.toString());
+                byte[] bytePointTraining = getArguments().getByteArray(ARG_POINTTRAINING.toString());
+                pointTraining = (PointTraining)Comun.convertFromBytes(bytePointTraining);
+            }
+        } catch (Exception e) {
+            Log.e("WifiFragment", "onCreate--->" + e.getMessage());
         }
     }
 
@@ -117,12 +108,10 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
     private void init(View view){
 
         try{
-            editWifiX = (EditText)view.findViewById(R.id.edit_x);
-            Float point = event.getX();
-            editWifiX.setText(point.toString());
-            editWifiY = (EditText)view.findViewById(R.id.edit_y);
-            point = event.getY();
-            editWifiY.setText(point.toString());
+            TextView textViewx= (TextView)view.findViewById(R.id.txt_x);
+            textViewx.setText(textViewx.getText() + ":" + pointTraining.getX().toString());
+            TextView textViewy = (TextView) view.findViewById(R.id.txt_y);
+            textViewy.setText(textViewy.getText() + ":" + pointTraining.getY().toString());
 
             listViewWifi = (ListView)view.findViewById(R.id.list_wifi);
             listViewWifi.setEmptyView(view.findViewById(R.id.empty_list_wifi));
@@ -165,8 +154,6 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
                 onAllChecksClick(v, item.isChecked());
             }
             else{
-                //item.toggle();
-                boolean check = item.isChecked();
                 item.setChecked(item.isChecked());
             }
             btnSaveWifiEnabledDisabbled();
@@ -209,7 +196,7 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
         try{
             AplicationWifi aplicationWifi = (AplicationWifi) getActivity().getApplication();
             if (aplicationWifi.getPointTrainings() != null)
-                numPointTraining = aplicationWifi.getPointTrainings().size();
+                aplicationWifi.getPointTrainings().size();
             SparseBooleanArray resultArray = listViewWifi.getCheckedItemPositions();
             listWifiScanSave = new ArrayList<ScanResult>();
             int size = resultArray.size();
@@ -218,8 +205,7 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
                     listWifiScanSave.add(listWifiScan.get(resultArray.keyAt(i)));
                     Log.i("CodecTestActivity", listViewWifi.getAdapter().getItem(resultArray.keyAt(i)).toString());
                 }
-            WifiPosManager.savePoint(listWifiScanSave, aplicationWifi,
-                    Double.valueOf(editWifiX.getText().toString()), Double.valueOf(this.editWifiY.getText().toString()));
+            WifiPosManager.savePoint(this.getActivity(),listWifiScanSave, aplicationWifi,pointTraining);
             this.dismiss();
         }catch (Exception ex){
             Log.e(this.getClass().getName(), "onSelectedChecksClick--->" + ex.getMessage());
@@ -230,15 +216,16 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
         WifiManager wifi = (WifiManager) this.getActivity()
                 .getSystemService(Context.WIFI_SERVICE);
         try {
+            wifi.startScan();
             List<ScanResult> listWifiScanAll = wifi.getScanResults();
             listWifi = new ArrayList<String>();
             if (listWifiScanAll != null) {
-                StringBuffer strWifi;
+                StringBuilder strWifi;
                 listWifiScan = new ArrayList<ScanResult>();
                 for (ScanResult scanResult:listWifiScanAll) {
                     if (scanResult == null || scanResult.level >= 0)
                         continue;
-                    strWifi = new StringBuffer();
+                    strWifi = new StringBuilder();
                     if (TextUtils.isEmpty(scanResult.SSID))
                         strWifi.append("....");
                     else
@@ -252,7 +239,7 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
                     listWifiScan.add(scanResult);
                 }
                 if (listWifiScan.size() > 0){
-                    strWifi = new StringBuffer();
+                    strWifi = new StringBuilder();
                     strWifi.append(getText(R.string.select_all));
                     listWifi.add(0,strWifi.toString());
                     listWifiScan.add(0,null);
@@ -301,7 +288,7 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        mListener.closeDialog(numPointTraining);
+        mListener.closeDialog();
         super.onDismiss(dialog);
     }
 

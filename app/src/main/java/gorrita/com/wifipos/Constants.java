@@ -11,7 +11,7 @@ public class Constants {
     public static final CharSequence DATABASE_NAME = "WifiPos";
     public static int VERSION = 1;
 
-    public static final CharSequence createTablePlanes =
+    public static final CharSequence CREATETABLEPLANES =
             " CREATE TABLE PLANES (" +
                     " ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " FILE TEXT NOT NULL," +
@@ -21,9 +21,9 @@ public class Constants {
                     " DATAUPDATED LONG NOT NULL DEFAULT " + System.currentTimeMillis() + " ," +
                     " ACTIVE INTEGER NOT NULL DEFAULT 1 " +
                     " )";
-    public static final CharSequence dropTablePlanes = "DROP TABLE IF EXISTS PLANES";
+    public static final CharSequence DROPTABLEPLANES = "DROP TABLE IF EXISTS PLANES";
 
-    public static final CharSequence createTablePointTrainings =
+    public static final CharSequence CREATETABLEPOINTTRAININGS =
             " CREATE TABLE POINTTRAININGS (" +
                     " ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " TRAINING INTEGER," +
@@ -36,9 +36,9 @@ public class Constants {
                     " FOREIGN KEY (TRAINING) REFERENCES TRAININGS (ID)" +
                     " )";
 
-    public static final CharSequence dropTablePointTrainings = "DROP TABLE IF EXISTS POINTTRAININGS";
+    public static final CharSequence DROPTABLEPOINTTRAININGS = "DROP TABLE IF EXISTS POINTTRAININGS";
 
-    public static final CharSequence createTablePointTrainingWifis =
+    public static final CharSequence CREATETABLEPOINTTRAININGWIFIS =
             " CREATE TABLE POINTTRAININGWIFIS (" +
                     " ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " POINTTRAINING INTEGER," +
@@ -53,9 +53,9 @@ public class Constants {
                     " FOREIGN KEY (WIFI) REFERENCES WIFIS (ID)" +
                     " )";
 
-    public static final CharSequence dropTablePointTrainingWifis = "DROP TABLE IF EXISTS POINTTRAININGWIFIS";
+    public static final CharSequence DROPTABLEPOINTTRAININGWIFIS = "DROP TABLE IF EXISTS POINTTRAININGWIFIS";
 
-    public static final CharSequence createTableTrainings =
+    public static final CharSequence CREATETABLETRAININGS =
             " CREATE TABLE TRAININGS (" +
                     " ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " PLANE INTEGER," +
@@ -66,9 +66,9 @@ public class Constants {
                     " FOREIGN KEY (PLANE) REFERENCES PLANES (ID)" +
                     " )";
 
-    public static final CharSequence dropTableTrainings = "DROP TABLE IF EXISTS TRAININGS";
+    public static final CharSequence DROPTABLETRAININGS = "DROP TABLE IF EXISTS TRAININGS";
 
-    public static final CharSequence createTableWifis =
+    public static final CharSequence CREATETABLEWIFIS =
             " CREATE TABLE WIFIS (" +
                     " ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " SSID TEXT," +
@@ -81,6 +81,6 @@ public class Constants {
                     " ACTIVE INTEGER NOT NULL DEFAULT 1 " +
                     " )";
 
-    public static final CharSequence dropTableWifis = "DROP TABLE IF EXISTS WIFIS";
+    public static final CharSequence DROPTABLEWIFIS = "DROP TABLE IF EXISTS WIFIS";
 
 }

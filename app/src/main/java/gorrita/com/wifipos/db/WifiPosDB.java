@@ -17,11 +17,11 @@ public class WifiPosDB extends SQLiteOpenHelper {
 
  @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(Constants.createTablePlanes.toString());
-        db.execSQL(Constants.createTableWifis.toString());
-        db.execSQL(Constants.createTableTrainings.toString());
-        db.execSQL(Constants.createTablePointTrainings.toString());
-        db.execSQL(Constants.createTablePointTrainingWifis.toString());
+        db.execSQL(Constants.CREATETABLEPLANES.toString());
+        db.execSQL(Constants.CREATETABLEWIFIS.toString());
+        db.execSQL(Constants.CREATETABLETRAININGS.toString());
+        db.execSQL(Constants.CREATETABLEPOINTTRAININGS.toString());
+        db.execSQL(Constants.CREATETABLEPOINTTRAININGWIFIS.toString());
         db.execSQL("INSERT INTO PLANES VALUES ( null, '0x7f02007f', 'pla prova', " +
                 "'primer pla de prova'," + System.currentTimeMillis() + " ," + System.currentTimeMillis() + " , 1)");
     }
@@ -30,11 +30,11 @@ public class WifiPosDB extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         if(oldVersion < newVersion) {
-            db.execSQL(Constants.dropTablePointTrainingWifis.toString());
-            db.execSQL(Constants.dropTablePointTrainings.toString());
-            db.execSQL(Constants.dropTableTrainings.toString());
-            db.execSQL(Constants.dropTablePlanes.toString());
-            db.execSQL(Constants.dropTableWifis.toString());
+            db.execSQL(Constants.DROPTABLEPOINTTRAININGWIFIS.toString());
+            db.execSQL(Constants.DROPTABLEPOINTTRAININGS.toString());
+            db.execSQL(Constants.DROPTABLETRAININGS.toString());
+            db.execSQL(Constants.DROPTABLEPLANES.toString());
+            db.execSQL(Constants.DROPTABLEWIFIS.toString());
             onCreate(db);
         }
     }

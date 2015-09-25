@@ -1,6 +1,7 @@
 package gorrita.com.wifipos;
 
 import android.app.Application;
+import android.graphics.Point;
 import android.util.Log;
 
 import java.util.List;
@@ -21,9 +22,9 @@ public class AplicationWifi extends Application {
     private Plane plane;
     private Training training;
     private List<PointTraining> pointTrainings;
-    private int insertados;
     private int heightPoint;
     private int widthPoint;
+    private Point size;
 
     @Override
     public void onCreate(){
@@ -34,7 +35,6 @@ public class AplicationWifi extends Application {
             plane = null;
             training = null;
             pointTrainings = null;
-            insertados = 0;
             heightPoint = 0;
             widthPoint = 0;
             Log.i(this.getClass().getName(), "onCreate");
@@ -83,14 +83,6 @@ public class AplicationWifi extends Application {
         this.pointTrainings = pointTrainings;
     }
 
-    public int getInsertados() {
-        return insertados;
-    }
-
-    public void setInsertados(int insertados) {
-        this.insertados = insertados;
-    }
-
     public int getHeightPoint() {
         return heightPoint;
     }
@@ -107,4 +99,11 @@ public class AplicationWifi extends Application {
         this.widthPoint = widthPoint;
     }
 
+    public Point getSize() {
+        return size;
+    }
+
+    public void setSize(Point size) {
+        this.size = size;
+    }
 }
