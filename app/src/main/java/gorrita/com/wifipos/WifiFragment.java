@@ -47,12 +47,13 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
 
     private OnFragmentInteractionListener mListener;
 
-    public static WifiFragment newInstance(MotionEvent event, PointTraining pointTraining) throws IOException {
+    public static WifiFragment newInstance(Activity act,MotionEvent event, PointTraining pointTraining) throws IOException {
         try{
             WifiFragment fragment = new WifiFragment();
             Bundle args = new Bundle();
             args.putParcelable(ARG_EVENT.toString(), event);
-            byte[] bytePointTraining = Comun.convertToBytes(pointTraining);
+            AplicationWifi aplicationWifi = (AplicationWifi) act.getApplication();
+            byte[] bytePointTraining = aplicationWifi.convertToBytes(pointTraining);
             args.putByteArray(ARG_POINTTRAINING.toString(), bytePointTraining);
             fragment.setArguments(args);
             return fragment;
@@ -74,7 +75,8 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
             if (getArguments() != null) {
                 event = getArguments().getParcelable(ARG_EVENT.toString());
                 byte[] bytePointTraining = getArguments().getByteArray(ARG_POINTTRAINING.toString());
-                pointTraining = (PointTraining)Comun.convertFromBytes(bytePointTraining);
+                AplicationWifi aplicationWifi = (AplicationWifi) getActivity().getApplication();
+                pointTraining = (PointTraining)aplicationWifi.convertFromBytes(bytePointTraining);
             }
         } catch (Exception e) {
             Log.e("WifiFragment", "onCreate--->" + e.getMessage());

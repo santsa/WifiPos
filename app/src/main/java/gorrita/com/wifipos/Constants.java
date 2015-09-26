@@ -1,12 +1,19 @@
 package gorrita.com.wifipos;
 
-/**
- * Created by sgorrita on 6/09/15.
- */
+
 public class Constants {
 
     public static final CharSequence PLANEFRAGMENTTAG = "PlaneTrainingFragment";
     public static final int ACTION_POSITION = 90000000;
+
+    public static final CharSequence X0Y0 = "X0Y0";
+    public static final CharSequence X0YN = "X0YN";
+    public static final CharSequence XNY0 = "XNY0";
+    public static final CharSequence XNYN = "XNYN";
+
+    public static final CharSequence KEYPOINTSDUAL[]={X0Y0.toString()+X0YN, X0Y0.toString()+XNY0, X0Y0.toString()+XNYN,
+                                                      X0YN.toString()+XNY0, X0YN.toString()+XNYN,
+                                                      XNY0.toString()+XNYN};
 
     public static final CharSequence DATABASE_NAME = "WifiPos";
     public static int VERSION = 1;

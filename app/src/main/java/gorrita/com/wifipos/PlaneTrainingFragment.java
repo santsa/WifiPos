@@ -85,7 +85,7 @@ public class PlaneTrainingFragment extends Fragment implements View.OnTouchListe
     private void loadPointTrainings(){
         AplicationWifi aplicationWifi = (AplicationWifi)getActivity().getApplication();
         if (aplicationWifi.getPointTrainings()!=null){
-            for (PointTraining pointTraining : aplicationWifi.getPointTrainings()) {
+            for (PointTraining pointTraining : aplicationWifi.getPointTrainings().values()) {
                 addImagePosition(pointTraining);
             }
         }

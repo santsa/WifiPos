@@ -10,10 +10,12 @@ import android.net.wifi.ScanResult;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import gorrita.com.wifipos.AplicationWifi;
-import gorrita.com.wifipos.Comun;
+import gorrita.com.wifipos.Constants;
 
 /**
  * Created by salva on 23/08/15.
@@ -408,12 +410,14 @@ public class WifiPosManager {
             Training training = WifiPosManager.insertTraining(aplicationWifi, 0);
             aplicationWifi.setTraining(training);
         }
-            List<PointTraining> listPointTraining = new ArrayList<PointTraining>();
-            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, 0.0 -10, 0.0-10, 0));
-            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, (double) size.x-60, 0.0-10, 0));
-            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, 0.0 -10, (double) size.y-100, 0));
-            listPointTraining.add(WifiPosManager.insertPointTraining(aplicationWifi, (double)size.x-60, (double)size.y-100, 0));
-            aplicationWifi.setPointTrainings(listPointTraining);
+
+            Map<CharSequence,PointTraining> mapPointTrainings = new HashMap<CharSequence,PointTraining>();
+            mapPointTrainings.put(Constants.X0Y0, WifiPosManager.insertPointTraining(aplicationWifi, 0.0 - 10, 0.0 - 10, 0));
+            mapPointTrainings.put(Constants.X0YN, WifiPosManager.insertPointTraining(aplicationWifi, 0.0 - 10, (double) size.y - 100, 0));
+            mapPointTrainings.put(Constants.XNY0, WifiPosManager.insertPointTraining(aplicationWifi, (double) size.x - 60, 0.0 - 10, 0));
+            mapPointTrainings.put(Constants.XNYN, WifiPosManager.insertPointTraining(aplicationWifi, (double) size.x - 60, (double) size.y - 100, 0));
+            aplicationWifi.setPointTrainings(mapPointTrainings);
+
         } catch (Exception e) {
             aplicationWifi.setTraining(null);
             aplicationWifi.getPointTrainings().clear();
@@ -482,9 +486,10 @@ public class WifiPosManager {
                     insertPointTrainingWifi(pointTraining, wifi, scanResult.level, scanResult.timestamp);
                 i++;
             }
-            int index = aplicationWifi.getPointTrainings().lastIndexOf(pointTraining);
-            aplicationWifi.getPointTrainings().get(index).setActive(1);
-            if(!Comun.configureTraining(act, false)){
+            //int index = aplicationWifi.getPointTrainings().lastIndexOf(pointTraining);
+            //aplicationWifi.getPointTrainings().get(index).setActive(1);
+            activatePointTraining(aplicationWifi, pointTraining);
+            if(!aplicationWifi.configureTraining(act, false)){
                 filasAfectadas = updateTraining(aplicationWifi.getTraining(),"id = ?", new String[]{String.valueOf(aplicationWifi.getTraining().getId())});
             }
             dbr.setTransactionSuccessful();
@@ -503,6 +508,17 @@ public class WifiPosManager {
             }
             close(dbw, null);
             close(dbr, null);
+        }
+    }
+
+    private static void activatePointTraining(AplicationWifi aplicationWifi, PointTraining pointTraining){
+        pointTraining.setTraining(1);
+        for (Map.Entry<CharSequence, PointTraining> entryPointtraining: aplicationWifi.getPointTrainings().entrySet()) {
+            PointTraining p = entryPointtraining.getValue();
+            if (p.equals(pointTraining)) {
+                aplicationWifi.getPointTrainings().put(entryPointtraining.getKey(), pointTraining);
+                return;
+            }
         }
     }
 

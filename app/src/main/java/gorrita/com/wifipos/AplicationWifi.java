@@ -1,10 +1,20 @@
 package gorrita.com.wifipos;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.util.Map;
 
 import gorrita.com.wifipos.db.Plane;
 import gorrita.com.wifipos.db.PointTraining;
@@ -21,7 +31,7 @@ public class AplicationWifi extends Application {
     private boolean first;
     private Plane plane;
     private Training training;
-    private List<PointTraining> pointTrainings;
+    private Map<CharSequence,PointTraining> pointTrainings;
     private int heightPoint;
     private int widthPoint;
     private Point size;
@@ -41,6 +51,39 @@ public class AplicationWifi extends Application {
         }catch (Exception e){
             Log.e(this.getClass().getName(), "onCreate--->" + e.getMessage());
         }
+    }
+
+    public byte[] convertToBytes(Object object) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = new ObjectOutputStream(bos);
+        out.writeObject(object);
+        return bos.toByteArray();
+    }
+
+    public Object convertFromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInput in = new ObjectInputStream(bis);
+        return in.readObject();
+    }
+
+    public boolean configureTraining(Activity activity,boolean prefer){
+        if(pointTrainings!=null && pointTrainings.size() >= 4) {
+            for (PointTraining pointTraining:pointTrainings.values()){
+                if(pointTraining.getActive() == 0) {
+                    training.setActive(0);
+                    return true;
+                }
+            }
+            training.setActive(1);
+            if (prefer) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+                boolean pref = prefs.getBoolean("training", false);
+                return pref;
+            }
+            return false;
+        }
+        training.setActive(0);
+        return true;
     }
 
     public boolean isWifi() {
@@ -75,11 +118,11 @@ public class AplicationWifi extends Application {
         this.training = training;
     }
 
-    public List<PointTraining> getPointTrainings() {
+    public Map<CharSequence, PointTraining> getPointTrainings() {
         return pointTrainings;
     }
 
-    public void setPointTrainings(List<PointTraining> pointTrainings) {
+    public void setPointTrainings(Map<CharSequence, PointTraining> pointTrainings) {
         this.pointTrainings = pointTrainings;
     }
 

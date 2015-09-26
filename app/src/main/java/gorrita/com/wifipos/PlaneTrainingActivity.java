@@ -25,7 +25,7 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
 
             PointTraining pointTraining = selectedPointTraining(event);
             if(pointTraining != null) {
-                wifiFragment = WifiFragment.newInstance(event, pointTraining);
+                wifiFragment = WifiFragment.newInstance(this, event, pointTraining);
                 wifiFragment.show(getFragmentManager(), "dialog");
             }
             else{
@@ -38,7 +38,7 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
 
     private PointTraining selectedPointTraining(MotionEvent event){
         AplicationWifi aplicationWifi = (AplicationWifi) getApplication();
-        for (PointTraining pointTraining: aplicationWifi.getPointTrainings()){
+        for (PointTraining pointTraining: aplicationWifi.getPointTrainings().values()){
             if ((Math.abs(pointTraining.getX() - event.getX()) < 150)
                     && (Math.abs(pointTraining.getY() - event.getY()) < 150)) {
                 return pointTraining;
@@ -79,7 +79,7 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         AplicationWifi aplicationWifi = (AplicationWifi) getApplication();
-        if(Comun.configureTraining(this, false)) {
+        if(aplicationWifi.configureTraining(this, false)) {
             menu.add(Menu.NONE, Constants.ACTION_POSITION, Menu.NONE, R.string.tittle_position)
                     .setIcon(android.R.drawable.ic_menu_directions);
         }

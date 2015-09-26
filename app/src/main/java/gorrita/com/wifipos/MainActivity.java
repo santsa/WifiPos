@@ -16,7 +16,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import gorrita.com.wifipos.db.Plane;
 import gorrita.com.wifipos.db.PointTraining;
@@ -102,7 +104,8 @@ public class MainActivity extends Activity {
                                                 wifiManager.setWifiEnabled(true);
                                             if (initPlane()) {
                                                 Intent intent;
-                                                if (Comun.configureTraining(MainActivity.this, true)) {
+                                                aplicationWifi = (AplicationWifi) getApplication();
+                                                if (aplicationWifi.configureTraining(MainActivity.this, true)) {
                                                     intent = new Intent(MainActivity.this, PlaneTrainingActivity.class);
                                                 } else {
                                                     intent = new Intent(MainActivity.this, PlanePositionActivity.class);
@@ -156,8 +159,13 @@ public class MainActivity extends Activity {
                     aplicationWifi.setTraining(lstTraining.get(0));
                     if (aplicationWifi.getPointTrainings() == null || aplicationWifi.getPointTrainings().isEmpty()) {
                         List<PointTraining> lstPointTrainings = WifiPosManager.listPointTraining(
-                                " WHERE TRAINING = " + aplicationWifi.getTraining().getId());
-                        aplicationWifi.setPointTrainings(lstPointTrainings);
+                                " WHERE TRAINING = " + aplicationWifi.getTraining().getId() + " ORDER BY ID");
+                        Map<CharSequence,PointTraining> mapPointTrainings = new HashMap<CharSequence,PointTraining>();
+                        mapPointTrainings.put(Constants.X0Y0,lstPointTrainings.get(0));
+                        mapPointTrainings.put(Constants.X0YN,lstPointTrainings.get(1));
+                        mapPointTrainings.put(Constants.XNY0,lstPointTrainings.get(2));
+                        mapPointTrainings.put(Constants.XNYN,lstPointTrainings.get(3));
+                        aplicationWifi.setPointTrainings(mapPointTrainings);
                     } else {
                         insertPointTraining(false);
                     }
