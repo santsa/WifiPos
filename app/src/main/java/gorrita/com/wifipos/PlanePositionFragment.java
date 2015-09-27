@@ -227,12 +227,9 @@ public class PlanePositionFragment extends Fragment {
 
         AplicationWifi aplicationWifi;
         Map<PointTraining, Map<Wifi,PointTrainingWifi>> mapPointsTraining;
-        Float x;
-        Float y;
         Boolean exit;
         WifiManager wifi;
         List<ScanResult> listWifiScan;
-
         private WeakReference<Fragment> fragmentWeakRef;
 
         private UpdatePosition (PlanePositionFragment fragment) {
@@ -326,74 +323,137 @@ public class PlanePositionFragment extends Fragment {
             return mapComun;
         }
 
+        private long sleep;
+        private Point position;
+        private List<Point> positionFinal;
+
         @Override
         protected Void doInBackground(Float... params) {
+            positionFinal = new ArrayList<Point>();
             while (!exit){
-                SystemClock.sleep((long)Math.round(params[0]));
-                publishProgress(x,y);
+                long sleep = (long)Math.round(params[0])-500;
+                for(int i = 0; i<5; i++){
+                    wifiScan();
+                    Map<CharSequence,Object[]> mapComunWifis = comunWifis();
+                    position = calculatePosition(mapComunWifis);
+                    positionFinal.add(position);
+                    SystemClock.sleep(100);
+                }
+                SystemClock.sleep(sleep);
+                position = finePosition(positionFinal);
+                publishProgress();
             }
             return null;
         }
 
-        private void /*Map<Integer,Point>*/ calculatePosition(Map<CharSequence,Object[]> mapComunWifis){
-
+        private Point calculatePosition(Map<CharSequence,Object[]> mapComunWifis){
+            List<Point> lstPointsAll = new ArrayList<Point>();
             for(CharSequence key : Constants.KEYPOINTSDUAL){
                 Object[] obs = mapComunWifis.get(key);
                 Map<Integer,ScanResult> mapScanComun = (Map<Integer, ScanResult>) obs[0];
                 Map<Wifi,PointTrainingWifi> wifi1 = (Map<Wifi, PointTrainingWifi>) obs[1];
                 Map<Wifi,PointTrainingWifi> wifi2 = (Map<Wifi, PointTrainingWifi>) obs[2];
-                Map<CharSequence,List<Point>> mapPositions = new HashMap<CharSequence,List<Point>>();
                 List<Point> lstPoints = new ArrayList<Point>();
                 for (Map.Entry<Wifi,PointTrainingWifi> entryWifi: wifi1.entrySet()) {
                     Wifi w1 = entryWifi.getKey();
                     PointTrainingWifi p1 = entryWifi.getValue();
                     PointTrainingWifi p2 = wifi2.get(w1);
                     ScanResult sr = mapScanComun.get(w1.getId());
-                    Point p = calculatePosWifi(w1, p1, p2, sr);
+                    Point p = calculatePosWifi(w1, p1, p2, sr, key);
                     lstPoints.add(p);
                 }
-                mapPositions.put(key,lstPoints);
+                Point pointFine = finePosition(lstPoints);
+                lstPointsAll.add(pointFine);
             }
+            Point pointFineAll = finePositionAll(lstPointsAll);
+            return pointFineAll;
         }
 
-        //TODO: QUEDA IMPLEMENTAR
+        //TODO: QUEDA IMPLEMENTAR EL POSICIONAMIENTO
 
         private Point calculatePosWifi(Object... args){
             Wifi w1 = (Wifi) args[0];
-            PointTrainingWifi p1 = (PointTrainingWifi) args[1];
-            PointTrainingWifi p2 = (PointTrainingWifi) args[2];
+            PointTrainingWifi pw1 = (PointTrainingWifi) args[1];
+            PointTrainingWifi pw2 = (PointTrainingWifi) args[2];
             ScanResult sr = (ScanResult) args[03];
-            //TODO: CALCULAR LA POSICION
-            return new Point();
+            CharSequence key = (CharSequence) args[4];
+            CharSequence prefix = key.subSequence(0, 4);
+            CharSequence sufix = key.subSequence(4, key.length());
+            Map<CharSequence,PointTraining> mapPoinsTraining = aplicationWifi.getPointTrainings();
+            PointTraining p1 = mapPoinsTraining.get(prefix);
+            PointTraining p2 = mapPoinsTraining.get(sufix);
+            Double difx = Math.abs(p1.getX() - p2.getX());
+            Double dify = Math.abs(p1.getY() - p2.getY());
+            Integer difLevelp1p2 = Math.abs(Math.abs(pw1.getLevel())-Math.abs(pw2.getLevel()));
+            Integer difLevelp1Sr = Math.abs(Math.abs(pw1.getLevel())-Math.abs(sr.level));
+            Integer difLevelp2Sr = Math.abs(Math.abs(pw2.getLevel())-Math.abs(sr.level));
+            Double x = 0.0;
+            Double y = 0.0;
+            if(difx > 0){
+                x = calcPos (difx, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
+            }
+            if(dify > 0){
+                y = calcPos (difx, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
+            }
+            Point pos = new Point();
+            pos.set(x.intValue(),y.intValue());
+            return pos;
         }
 
-        //TODO: AFINAR LA POSICION DE UNA PAREJA DE PUNTOS ENTRE
-        private void finePosition(){}
+        private double calcPos (Double dif, Integer difLevelp1p2, Integer difLevelp1Sr, Integer difLevelp2Sr){
+            double coefPixelLevel = difLevelp1p2 == 0? 1:dif/difLevelp1p2;
+            double coord1 = difLevelp1Sr == 0? dif:difLevelp1Sr * coefPixelLevel;
+            double coord2 = difLevelp1Sr == 0? dif:difLevelp2Sr * coefPixelLevel;
+            return (coord1 + coord2)/2;
+        }
 
-        //TODO: CALCULAR LA POSICION CON LOS PUNTOS YA AFINADOS
-        private void finePositionAll(){}
+        private Point finePosition(List<Point> lstPoints){
+            int x = 0;
+            int y = 0;
+            for(Point point: lstPoints){
+                x+=point.x;
+                y+=point.y;
+            }
+            x = x/(lstPoints.size());
+            y = y/(lstPoints.size());
+            Point point = new Point();
+            point.set(x,y);
+            return point;
+        }
+
+        private Point finePositionAll(List<Point> lstPoints){
+            int x = 0;
+            int y = 0;
+            for(int i = 1; i<lstPoints.size()-1; i++){
+                Point point = lstPoints.get(i);
+                x+=point.x;
+                y+=point.y;
+            }
+            x = x/(lstPoints.size()+2);
+            y = y/(lstPoints.size()+2);
+            Point point = new Point();
+            point.set(x,y);
+            return point;
+        }
 
         @Override
         protected void onProgressUpdate(Float... params){
-            wifiScan();
-            Map<CharSequence,Object[]> mapComunWifis = comunWifis();
-            calculatePosition(mapComunWifis);
-            x = imagePosition.getX();
-            y = imagePosition.getY();
+            //x = imagePosition.getX();
+            //y = imagePosition.getY();
             Point size = aplicationWifi.getSize();
-            if (x+20 < 0-10)
+            if (position.x < 0-10)
                 imagePosition.setX(0-10);
-            else if (x+20 > size.x-60)
+            else if (position.x+20 > size.x-60)
                 imagePosition.setX(size.x-60);
             else
-                imagePosition.setX(x+20);
+                imagePosition.setX(position.x);
 
-            if (y + 20 < 0-10)
+            if (position.y + 20 < 0-10)
                 imagePosition.setY(0 -10);
-            if (y + 20 > size.y-100)
+            if (position.y + 20 > size.y-100)
                 imagePosition.setY(size.y-100);
             else
-                imagePosition.setY(y + 20);
+                imagePosition.setY(position.y);
         }
 
         private void wifiScan(){

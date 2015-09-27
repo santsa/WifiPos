@@ -13,7 +13,8 @@ public class Constants {
 
     public static final CharSequence KEYPOINTSDUAL[]={X0Y0.toString()+X0YN, X0Y0.toString()+XNY0, X0Y0.toString()+XNYN,
                                                       X0YN.toString()+XNY0, X0YN.toString()+XNYN,
-                                                      XNY0.toString()+XNYN};
+                                                      XNY0.toString()+XNYN
+                                                     };
 
     public static final CharSequence DATABASE_NAME = "WifiPos";
     public static int VERSION = 1;
