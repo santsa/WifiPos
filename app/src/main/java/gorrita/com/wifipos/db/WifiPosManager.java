@@ -435,7 +435,8 @@ public class WifiPosManager {
         }
     }
 
-    public static void savePoint(Activity act,List<ScanResult> lstScanResult, AplicationWifi aplicationWifi, PointTraining pointTraining) {
+    public static void savePoint(Activity act,List<ScanResult> lstScanResult, AplicationWifi aplicationWifi,
+                                 PointTraining pointTraining) {
         try {
 
             dbr = wifiPosDB.getWritableDatabase();
@@ -443,6 +444,7 @@ public class WifiPosManager {
             int filasAfectadas = 0;
             if(pointTraining.getActive() == 0) {
                 pointTraining.setActive(1);
+                pointTraining.setDataUpdateted(System.currentTimeMillis());
                 filasAfectadas = updatePointTraining(pointTraining, "id = ?", new String[]{String.valueOf(pointTraining.getId())});
             }
             //wifi comprobar si existeix un wifi amb la mateixa MAC
@@ -472,6 +474,7 @@ public class WifiPosManager {
                     PointTrainingWifi p;
                     for (PointTrainingWifi pointTrainingWifi : lstPontsTrainingWifi) {
                         if (pointTrainingWifi.getWifi() == wifi.getId()) {
+                            pointTrainingWifi.setDataUpdateted(System.currentTimeMillis());
                             filasAfectadas = updatePointTrainingWifi(pointTrainingWifi, "id = ?", new String[]{String.valueOf(pointTrainingWifi.getId())});
                             p = pointTrainingWifi;
                             update = true;
@@ -490,6 +493,8 @@ public class WifiPosManager {
             //aplicationWifi.getPointTrainings().get(index).setActive(1);
             activatePointTraining(aplicationWifi, pointTraining);
             if(!aplicationWifi.configureTraining(act, false)){
+                Training training = aplicationWifi.getTraining();
+                training.setDataUpdateted(System.currentTimeMillis());
                 filasAfectadas = updateTraining(aplicationWifi.getTraining(),"id = ?", new String[]{String.valueOf(aplicationWifi.getTraining().getId())});
             }
             dbr.setTransactionSuccessful();

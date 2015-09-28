@@ -17,8 +17,8 @@
     </style>
 
     <style name="WifiButton" parent="Wifi_match_warp">
-        <item name="android:textColor">#070B19</item>
-        <item name="android:background">#084B8A</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:background">@android:color/holo_purple</item>
         <item name="android:typeface">monospace</item>
         <item name="android:layout_margin">2dp</item>
     </style>

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -14,6 +16,8 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import gorrita.com.wifipos.db.Plane;
@@ -84,6 +88,41 @@ public class AplicationWifi extends Application {
         }
         training.setActive(0);
         return true;
+    }
+
+    public List<ScanResult> scanAVGScanResults(WifiManager wifi, int scans){
+
+        List<List<ScanResult>> listsWifiScanAll =  new ArrayList<List<ScanResult>>();
+        for (int i = 0; i < scans; i++) {
+            wifi.startScan();
+            List<ScanResult> listWifiScan = wifi.getScanResults();
+            if (listWifiScan != null)
+                listsWifiScanAll.add(i, listWifiScan);
+            else
+                return null;
+        }
+
+        List<ScanResult> listWifiScanAll = listsWifiScanAll.get(0);
+        for (ScanResult sc : listWifiScanAll) {
+            int level = Math.abs(sc.level);
+            for (int i = 1; i < listsWifiScanAll.size(); i++) {
+                level += scanResultLevel(sc, listsWifiScanAll.get(i));
+            }
+            sc.level = (-level / listsWifiScanAll.size());
+        }
+        return listsWifiScanAll.get(0);
+    }
+
+    private int scanResultLevel (ScanResult sc, List<ScanResult> listWifiScan){
+        for(ScanResult s: listWifiScan){
+            if(sc.BSSID.equals(s.BSSID)) {
+                if(Math.abs(s.level) < 0)
+                    return Math.abs(s.level);
+                else
+                    return Math.abs(sc.level);
+            }
+        }
+        return Math.abs(sc.level);
     }
 
     public boolean isWifi() {

@@ -16,13 +16,13 @@
     <application
         android:name=".AplicationWifi"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ft_icon_fastpath"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,6 +33,7 @@
         <activity
             android:name=".PlaneTrainingActivity"
             android:label="@string/title_activity_plane"
+            android:launchMode="singleTask"
             android:screenOrientation="landscape" >
         </activity>
         <activity
@@ -45,6 +46,7 @@
         <activity
             android:name=".PlanePositionActivity"
             android:label="@string/title_activity_plane_position"
+            android:launchMode="singleTask"
             android:screenOrientation="landscape" >
         </activity>
     </application>

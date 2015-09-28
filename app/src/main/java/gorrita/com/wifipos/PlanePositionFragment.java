@@ -1,6 +1,7 @@
 package gorrita.com.wifipos;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -38,12 +39,10 @@ import gorrita.com.wifipos.db.WifiPosManager;
 
 
 public class PlanePositionFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -55,15 +54,6 @@ public class PlanePositionFragment extends Fragment {
     private UpdatePosition updatePosition;
     private WeakReference<UpdatePosition> asyncTaskWeakRef;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PlanePositionFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static PlanePositionFragment newInstance(String param1, String param2) {
         PlanePositionFragment fragment = new PlanePositionFragment();
         Bundle args = new Bundle();
@@ -97,7 +87,7 @@ public class PlanePositionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         try {
-            // Inflate the layout for this fragment
+
             view = inflater.inflate(R.layout.fragment_plane_position, container, false);
             loadImageResource();
             ((AplicationWifi)getActivity().getApplication()).setFirst(false);
@@ -179,13 +169,17 @@ public class PlanePositionFragment extends Fragment {
     public void onDetach() {
         try {
             super.onDetach();
-            mListener = null;
-            asyncTaskWeakRef.get().exit = true;
-            asyncTaskWeakRef.get().cancel(true);
-            asyncTaskWeakRef.get().listWifiScan.clear();
+           mListener = null;
+            clear();
         } catch (ClassCastException e) {
             Log.e(this.getClass().getName(), "onDetach--->" + e.getMessage());;
         }
+    }
+
+    private void clear(){
+        asyncTaskWeakRef.get().exit = true;
+        asyncTaskWeakRef.get().cancel(true);
+        asyncTaskWeakRef.get().listWifiScan.clear();
     }
 
     @Override
@@ -197,17 +191,21 @@ public class PlanePositionFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         Intent intent;
+        ActivityOptions actOps = null;
         switch (id) {
-
             case R.id.accion_position_exit:
                 intent = new Intent(this.getActivity(), MainActivity.class);
-                startActivity(intent);
-                onDetach();
+                actOps = ActivityOptions.makeCustomAnimation(this.getActivity(),
+                        R.anim.replace_inside_rigth, R.anim.replace_inside_left);
+                startActivity(intent, actOps.toBundle());
+                clear();
                 break;
             case R.id.accion_position_training:
                 intent = new Intent(this.getActivity(), PlaneTrainingActivity.class);
-                startActivity(intent);
-                onDetach();
+                actOps = ActivityOptions.makeCustomAnimation(this.getActivity(),
+                        R.anim.replace_inside_rigth,R.anim.replace_inside_left);
+                startActivity(intent, actOps.toBundle());
+                clear();
                 break;
             default:
                 Toast.makeText(this.getActivity(), getString(android.R.string.unknownName), Toast.LENGTH_SHORT).show();
@@ -323,7 +321,6 @@ public class PlanePositionFragment extends Fragment {
             return mapComun;
         }
 
-        private long sleep;
         private Point position;
         private List<Point> positionFinal;
 
@@ -331,8 +328,8 @@ public class PlanePositionFragment extends Fragment {
         protected Void doInBackground(Float... params) {
             positionFinal = new ArrayList<Point>();
             while (!exit){
-                long sleep = (long)Math.round(params[0])-500;
-                for(int i = 0; i<5; i++){
+                long sleep = (long)Math.round(params[0])-300;
+                for(int i = 0; i<3; i++){
                     wifiScan();
                     Map<CharSequence,Object[]> mapComunWifis = comunWifis();
                     position = calculatePosition(mapComunWifis);
@@ -340,7 +337,7 @@ public class PlanePositionFragment extends Fragment {
                     SystemClock.sleep(100);
                 }
                 SystemClock.sleep(sleep);
-                position = finePosition(positionFinal);
+                position = finePosition(positionFinal,0);
                 publishProgress();
             }
             return null;
@@ -362,14 +359,14 @@ public class PlanePositionFragment extends Fragment {
                     Point p = calculatePosWifi(w1, p1, p2, sr, key);
                     lstPoints.add(p);
                 }
-                Point pointFine = finePosition(lstPoints);
+                Point pointFine = finePosition(lstPoints,0);
                 lstPointsAll.add(pointFine);
             }
-            Point pointFineAll = finePositionAll(lstPointsAll);
+            Point pointFineAll = finePosition(lstPointsAll,0);
             return pointFineAll;
         }
 
-        //TODO: QUEDA IMPLEMENTAR EL POSICIONAMIENTO
+        //Extraure x,e y
 
         private Point calculatePosWifi(Object... args){
             Wifi w1 = (Wifi) args[0];
@@ -390,10 +387,10 @@ public class PlanePositionFragment extends Fragment {
             Double x = 0.0;
             Double y = 0.0;
             if(difx > 0){
-                x = calcPos (difx, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
+                x = calcPos (difx/2, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
             }
             if(dify > 0){
-                y = calcPos (difx, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
+                y = calcPos (dify/2, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
             }
             Point pos = new Point();
             pos.set(x.intValue(),y.intValue());
@@ -401,36 +398,21 @@ public class PlanePositionFragment extends Fragment {
         }
 
         private double calcPos (Double dif, Integer difLevelp1p2, Integer difLevelp1Sr, Integer difLevelp2Sr){
-            double coefPixelLevel = difLevelp1p2 == 0? 1:dif/difLevelp1p2;
+            double coefPixelLevel = difLevelp1p2 < 3? dif:dif/difLevelp1p2;
             double coord1 = difLevelp1Sr == 0? dif:difLevelp1Sr * coefPixelLevel;
             double coord2 = difLevelp1Sr == 0? dif:difLevelp2Sr * coefPixelLevel;
             return (coord1 + coord2)/2;
         }
 
-        private Point finePosition(List<Point> lstPoints){
+        private Point finePosition(List<Point> lstPoints, int sum){
             int x = 0;
             int y = 0;
             for(Point point: lstPoints){
                 x+=point.x;
                 y+=point.y;
             }
-            x = x/(lstPoints.size());
-            y = y/(lstPoints.size());
-            Point point = new Point();
-            point.set(x,y);
-            return point;
-        }
-
-        private Point finePositionAll(List<Point> lstPoints){
-            int x = 0;
-            int y = 0;
-            for(int i = 1; i<lstPoints.size()-1; i++){
-                Point point = lstPoints.get(i);
-                x+=point.x;
-                y+=point.y;
-            }
-            x = x/(lstPoints.size()+2);
-            y = y/(lstPoints.size()+2);
+            x = x/(lstPoints.size() + sum);
+            y = y/(lstPoints.size() + sum);
             Point point = new Point();
             point.set(x,y);
             return point;
@@ -443,14 +425,14 @@ public class PlanePositionFragment extends Fragment {
             Point size = aplicationWifi.getSize();
             if (position.x < 0-10)
                 imagePosition.setX(0-10);
-            else if (position.x+20 > size.x-60)
+            else if (position.x > size.x-60)
                 imagePosition.setX(size.x-60);
             else
                 imagePosition.setX(position.x);
 
-            if (position.y + 20 < 0-10)
+            if (position.y < 0-10)
                 imagePosition.setY(0 -10);
-            if (position.y + 20 > size.y-100)
+            if (position.y > size.y-100)
                 imagePosition.setY(size.y-100);
             else
                 imagePosition.setY(position.y);
@@ -458,8 +440,10 @@ public class PlanePositionFragment extends Fragment {
 
         private void wifiScan(){
             try {
-                wifi.startScan();
-                listWifiScan = wifi.getScanResults();
+                //wifi.startScan();
+                //listWifiScan = wifi.getScanResults();
+                AplicationWifi aplicationWifi = (AplicationWifi) getActivity().getApplication();
+                listWifiScan = aplicationWifi.scanAVGScanResults(wifi, 5);
             }catch (Exception ex){
                 listWifiScan.clear();
                 Log.e(this.getClass().getName(), "listWifiScan--->" + ex.getMessage());

@@ -215,14 +215,14 @@ public class WifiFragment extends DialogFragment implements DialogInterface.OnDi
     }
 
     private void listWifiScan(){
-        WifiManager wifi = (WifiManager) this.getActivity()
-                .getSystemService(Context.WIFI_SERVICE);
         try {
-            wifi.startScan();
-            List<ScanResult> listWifiScanAll = wifi.getScanResults();
-            listWifi = new ArrayList<String>();
+            WifiManager wifi = (WifiManager) this.getActivity()
+                    .getSystemService(Context.WIFI_SERVICE);
+            AplicationWifi aplicationWifi = (AplicationWifi) getActivity().getApplication();
+            List<ScanResult> listWifiScanAll = aplicationWifi.scanAVGScanResults(wifi, 10);
             if (listWifiScanAll != null) {
                 StringBuilder strWifi;
+                listWifi = new ArrayList<String>();
                 listWifiScan = new ArrayList<ScanResult>();
                 for (ScanResult scanResult:listWifiScanAll) {
                     if (scanResult == null || scanResult.level >= 0)

@@ -1,6 +1,7 @@
 package gorrita.com.wifipos;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,8 +50,10 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
 
     @Override
     public void closeDialog() {
-        newInstanceFragmentPlane();
-        //planeFragment.reloadPointTrainings(numPointTraining);
+        AplicationWifi aplicationWifi = (AplicationWifi) getApplication();
+        if(aplicationWifi.getTraining().getActive() == 1) {
+            invalidateOptionsMenu();
+        }
     }
 
     @Override
@@ -59,7 +62,7 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_plane_training);
             //PlaneTrainingFragment planeFragment = (PlaneTrainingFragment) getFragmentManager().findFragmentById(R.id.plane_fragment);
-            //newInstanceFragmentPlane();
+            newInstanceFragmentPlane();
         }
         catch(Exception e){
             Log.e(this.getClass().getName(), "onCreate--->" + e.getMessage());
@@ -77,9 +80,8 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         AplicationWifi aplicationWifi = (AplicationWifi) getApplication();
-        if(aplicationWifi.configureTraining(this, false)) {
+        if(aplicationWifi.getTraining().getActive() == 1) {
             menu.add(Menu.NONE, Constants.ACTION_POSITION, Menu.NONE, R.string.tittle_position)
                     .setIcon(android.R.drawable.ic_menu_directions);
         }
@@ -94,29 +96,31 @@ public class PlaneTrainingActivity extends Activity implements OnFragmentInterac
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         Intent intent;
+        ActivityOptions actOps = null;
         switch (id){
 
             case R.id.action_settings:
                 intent = new Intent(this, PreferencesActivity.class);
-                startActivity(intent);
+                actOps = ActivityOptions.makeCustomAnimation(this, R.anim.preferences_in,
+                        R.anim.preferences_out);
+                startActivity(intent, actOps.toBundle());
                 break;
             case R.id.accion_exit:
                 intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                actOps = ActivityOptions.makeCustomAnimation(this, R.anim.replace_inside_rigth,
+                        R.anim.replace_inside_left);
+                startActivity(intent, actOps.toBundle());
                 break;
-            case Constants.ACTION_POSITION://R.id.action_position:
+            case Constants.ACTION_POSITION:
                 intent = new Intent(this, PlanePositionActivity.class);
-                startActivity(intent);
+                actOps = ActivityOptions.makeCustomAnimation(this,R.anim.replace_inside_left,
+                        R.anim.replace_inside_rigth);
+                startActivity(intent, actOps.toBundle());
                 break;
             default:
                 Toast.makeText(this, getString(android.R.string.unknownName), Toast.LENGTH_SHORT).show();
 
         }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -1,6 +1,7 @@
 package gorrita.com.wifipos;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,6 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -29,6 +32,10 @@ import gorrita.com.wifipos.db.WifiPosManager;
 public class MainActivity extends Activity {
 
     private AplicationWifi aplicationWifi;
+    Button btnIni;
+    Button btnSettings;
+    Button btnAbout;
+    Button btnExit;
 
      @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,7 @@ public class MainActivity extends Activity {
              this.registerReceiver(this.WifiStateChangedReceiver,
                      new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
              configureButtons();
+             appear();
              Bundle extra = this.getIntent().getExtras();
              if (extra != null) {
                  if (extra.containsKey(String.valueOf(R.string.wifi)) &&
@@ -51,35 +59,45 @@ public class MainActivity extends Activity {
          }
     }
 
-        private void configureButtons(){
-            Button btnIni = (Button)findViewById(R.id.btnIni);
-            btnIni.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View arg0) {
-                    MainActivity.this.open();
-                }
-            });
-            Button btnSettings = (Button)findViewById(R.id.settings);
-            btnSettings.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View arg0) {
-                    Intent i = new Intent(MainActivity.this, PreferencesActivity.class);
-                    startActivity(i);
-                }
-            });
-            Button btnAbout = (Button)findViewById(R.id.about);
-            btnAbout.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View arg0) {
-                    Intent i = new Intent(MainActivity.this, AboutActivity.class);
-                    startActivity(i);
-                }
-            });
-            Button btnExit = (Button)findViewById(R.id.exit);
-            btnExit.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View arg0) {
-                    MainActivity.this.finish();
-                }
-            });
-        }
+    private void configureButtons(){
+        btnIni = (Button)findViewById(R.id.btnIni);
+        btnIni.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                MainActivity.this.open();
+            }
+        });
+        btnSettings = (Button)findViewById(R.id.settings);
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                Intent i = new Intent(MainActivity.this, PreferencesActivity.class);
+                startActivity(i);
+                overridePendingTransition(R.anim.preferences_in,
+                        R.anim.preferences_out);
+            }
+        });
+        btnAbout = (Button)findViewById(R.id.about);
+        btnAbout.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                Intent i = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(i);
+            }
+        });
+        btnExit = (Button)findViewById(R.id.exit);
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                MainActivity.this.finish();
+            }
+        });
+    }
 
+    private void appear() {
+        Animation animAppear = AnimationUtils.loadAnimation(this,
+                R.anim.appear);
+        btnIni.startAnimation(animAppear);
+        btnSettings.startAnimation(animAppear);
+        btnAbout.startAnimation(animAppear);
+        btnExit.startAnimation(animAppear);
+    }
 
     private void open(){
         try {
@@ -103,14 +121,7 @@ public class MainActivity extends Activity {
                                             if (wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED)
                                                 wifiManager.setWifiEnabled(true);
                                             if (initPlane()) {
-                                                Intent intent;
-                                                aplicationWifi = (AplicationWifi) getApplication();
-                                                if (aplicationWifi.configureTraining(MainActivity.this, true)) {
-                                                    intent = new Intent(MainActivity.this, PlaneTrainingActivity.class);
-                                                } else {
-                                                    intent = new Intent(MainActivity.this, PlanePositionActivity.class);
-                                                }
-                                                startActivity(intent);
+                                                MainActivity.this.openActivty();
                                             }
                                         }
                                         catch (Exception ex){
@@ -139,6 +150,20 @@ public class MainActivity extends Activity {
         }catch(Exception e){
             Log.e(this.getClass().getName(),"open--->" + e.getMessage());
         }
+    }
+
+    private void openActivty(){
+        Intent intent;
+        aplicationWifi = (AplicationWifi) getApplication();
+        ActivityOptions actOps = null;
+        if (aplicationWifi.configureTraining(this, true)) {
+            intent = new Intent(this, PlaneTrainingActivity.class);
+            actOps = ActivityOptions.makeCustomAnimation(this,R.anim.replace_inside_rigth, R.anim.replace_inside_left);
+        } else {
+            intent = new Intent(this, PlanePositionActivity.class);
+            actOps = ActivityOptions.makeCustomAnimation(this,R.anim.replace_inside_rigth,R.anim.replace_inside_left);
+        }
+        startActivity(intent, actOps.toBundle());
     }
 
     private CharSequence file = "0x7f02007f";

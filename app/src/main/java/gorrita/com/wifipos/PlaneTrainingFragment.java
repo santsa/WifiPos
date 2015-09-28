@@ -18,7 +18,6 @@ import gorrita.com.wifipos.db.PointTraining;
 
 public class PlaneTrainingFragment extends Fragment implements View.OnTouchListener/*, View.OnLongClickListener*/ {
 
-    private static final CharSequence MODETRAINING = "modeTraining";
 
     private OnFragmentInteractionListener mListener;
 
@@ -95,7 +94,7 @@ public class PlaneTrainingFragment extends Fragment implements View.OnTouchListe
         try {
             final FrameLayout fl = (FrameLayout) view.findViewById(R.id.fragment_training);
             ImageView imageViewPoint = new ImageView(getActivity());
-            imageViewPoint.setImageResource(android.R.drawable.star_on);
+            imageViewPoint.setImageResource(android.R.drawable.ic_menu_compass);
             AplicationWifi aplicationWifi = (AplicationWifi) getActivity().getApplication();
             FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams
                     (aplicationWifi.getWidthPoint() / 3, aplicationWifi.getWidthPoint() / 3);
