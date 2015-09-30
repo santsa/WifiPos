@@ -11,8 +11,8 @@ public class Constants {
     public static final CharSequence XNY0 = "XNY0";
     public static final CharSequence XNYN = "XNYN";
 
-    public static final CharSequence KEYPOINTSDUAL[]={X0Y0.toString()+X0YN, X0Y0.toString()+XNY0, X0Y0.toString()+XNYN,
-                                                      X0YN.toString()+XNY0, X0YN.toString()+XNYN,
+    public static final CharSequence KEYPOINTSDUAL[]={X0Y0.toString()+X0YN, X0Y0.toString()+XNY0,/* X0Y0.toString()+XNYN,*/
+                                                      /*X0YN.toString()+XNY0,*/ X0YN.toString()+XNYN,
                                                       XNY0.toString()+XNYN
                                                      };
 

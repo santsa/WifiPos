@@ -328,8 +328,8 @@ public class PlanePositionFragment extends Fragment {
         protected Void doInBackground(Float... params) {
             positionFinal = new ArrayList<Point>();
             while (!exit){
-                long sleep = (long)Math.round(params[0])-300;
-                for(int i = 0; i<3; i++){
+                long sleep = (long)Math.round(params[0])-500;
+                for(int i = 0; i<5; i++){
                     wifiScan();
                     Map<CharSequence,Object[]> mapComunWifis = comunWifis();
                     position = calculatePosition(mapComunWifis);
@@ -337,7 +337,7 @@ public class PlanePositionFragment extends Fragment {
                     SystemClock.sleep(100);
                 }
                 SystemClock.sleep(sleep);
-                position = finePosition(positionFinal,0);
+                position = finePosition(positionFinal);
                 publishProgress();
             }
             return null;
@@ -359,14 +359,13 @@ public class PlanePositionFragment extends Fragment {
                     Point p = calculatePosWifi(w1, p1, p2, sr, key);
                     lstPoints.add(p);
                 }
-                Point pointFine = finePosition(lstPoints,0);
+                Point pointFine = finePosition(lstPoints);
                 lstPointsAll.add(pointFine);
             }
-            Point pointFineAll = finePosition(lstPointsAll,0);
+            Point pointFineAll = finePosition(lstPointsAll);
             return pointFineAll;
         }
 
-        //Extraure x,e y
 
         private Point calculatePosWifi(Object... args){
             Wifi w1 = (Wifi) args[0];
@@ -379,40 +378,48 @@ public class PlanePositionFragment extends Fragment {
             Map<CharSequence,PointTraining> mapPoinsTraining = aplicationWifi.getPointTrainings();
             PointTraining p1 = mapPoinsTraining.get(prefix);
             PointTraining p2 = mapPoinsTraining.get(sufix);
-            Double difx = Math.abs(p1.getX() - p2.getX());
-            Double dify = Math.abs(p1.getY() - p2.getY());
-            Integer difLevelp1p2 = Math.abs(Math.abs(pw1.getLevel())-Math.abs(pw2.getLevel()));
-            Integer difLevelp1Sr = Math.abs(Math.abs(pw1.getLevel())-Math.abs(sr.level));
+            Integer difLevelp1p2 = Math.abs(Math.abs(pw1.getLevel()) - Math.abs(pw2.getLevel()));
+            Integer difLevelp1Sr = Math.abs(Math.abs(pw1.getLevel()) - Math.abs(sr.level));
             Integer difLevelp2Sr = Math.abs(Math.abs(pw2.getLevel())-Math.abs(sr.level));
-            Double x = 0.0;
-            Double y = 0.0;
-            if(difx > 0){
-                x = calcPos (difx/2, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
-            }
-            if(dify > 0){
-                y = calcPos (dify/2, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
-            }
+            Double _x1 = p1.getX();
+            Double _x2 = p2.getX();
+            Double x = calcPos (_x1, _x2,difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
+            Double _y1 = Math.abs(p1.getY());
+            Double _y2 = Math.abs(p2.getY());
+            Double y = calcPos (_y1, _y2, difLevelp1p2, difLevelp1Sr, difLevelp2Sr);
             Point pos = new Point();
             pos.set(x.intValue(),y.intValue());
             return pos;
         }
 
+        private double calcPos (Double xy1, Double xy2, Integer difLevelp1p2, Integer difLevelp1Sr, Integer difLevelp2Sr){
+            xy1 = xy1 <= 0 ? 1:xy1;
+            xy2 = xy2 <= 0 ? 1:xy2;
+            difLevelp1p2 = difLevelp1p2 <= 0 ? 1:difLevelp1p2;
+            difLevelp1Sr = difLevelp1Sr <= 0 ? 1:difLevelp1Sr;
+            difLevelp2Sr = difLevelp2Sr <= 0 ? 1:difLevelp2Sr;
+            Double xy = ((xy1*difLevelp1Sr)/(difLevelp1p2 + difLevelp1Sr + difLevelp2Sr)) +
+                    ((xy2*difLevelp2Sr)/(difLevelp1p2 + difLevelp1Sr + difLevelp2Sr));
+            return xy;
+        }
+
+        /*
         private double calcPos (Double dif, Integer difLevelp1p2, Integer difLevelp1Sr, Integer difLevelp2Sr){
-            double coefPixelLevel = difLevelp1p2 < 3? dif:dif/difLevelp1p2;
+            double coefPixelLevel = difLevelp1p2 <= 2 ? 1:dif/difLevelp1p2;
             double coord1 = difLevelp1Sr == 0? dif:difLevelp1Sr * coefPixelLevel;
             double coord2 = difLevelp1Sr == 0? dif:difLevelp2Sr * coefPixelLevel;
             return (coord1 + coord2)/2;
         }
-
-        private Point finePosition(List<Point> lstPoints, int sum){
+*/
+        private Point finePosition(List<Point> lstPoints){
             int x = 0;
             int y = 0;
             for(Point point: lstPoints){
                 x+=point.x;
                 y+=point.y;
             }
-            x = x/(lstPoints.size() + sum);
-            y = y/(lstPoints.size() + sum);
+            x = x/(lstPoints.size());
+            y = y/(lstPoints.size());
             Point point = new Point();
             point.set(x,y);
             return point;
